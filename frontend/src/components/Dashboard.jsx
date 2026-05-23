@@ -160,7 +160,7 @@ const Dashboard = ({ onBack }) => {
     if (!result || !result.overlay_base64) return;
     const link = document.createElement('a');
     link.href = `data:image/jpeg;base64,${result.overlay_base64}`;
-    link.download = `PusakaPulau-Scan-${Date.now()}.jpg`;
+    link.download = `CoralLens-Scan-${Date.now()}.jpg`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -194,7 +194,7 @@ const Dashboard = ({ onBack }) => {
             <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
           </svg>
           <span className="font-serif text-sm tracking-widest text-gradient-gold uppercase">
-            Pusaka Pulau
+            CoralLens
           </span>
         </div>
       </header>
