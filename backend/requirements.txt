@@ -1,0 +1,30 @@
+# ============================================
+# Coral Reef Condition Estimation System
+# Python Dependencies
+# ============================================
+
+# --- Core ML Framework ---
+torch>=2.0.0
+torchvision>=0.15.0
+
+# --- EfficientNet Backbone ---
+segmentation-models-pytorch>=0.3.3
+
+# --- API Framework ---
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+python-multipart>=0.0.6
+
+# --- Image Processing ---
+opencv-python>=4.8.0
+Pillow>=10.0.0
+albumentations>=1.3.1
+
+# --- Dataset Management ---
+roboflow>=0.2.0
+
+# --- Data Science & Utilities ---
+numpy>=1.24.0
+matplotlib>=3.7.0
+tqdm>=4.65.0
+pydantic>=2.0.0

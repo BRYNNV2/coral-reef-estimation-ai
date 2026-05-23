@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ── Design Tokens ── */
+:root {
+  --color-ocean-950: #040d12;
+  --color-ocean-900: #091921;
+  --color-ocean-800: #0c2a3a;
+  --color-ocean-700: #0f3b53;
+  --color-gold: #c9a96e;
+  --color-gold-light: #e6d5a8;
+  --color-gold-dark: #9e7e3f;
+  --color-teal: #2dd4bf;
+  --color-cyan: #22d3ee;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* ── Global Reset ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles this */
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-ocean-950);
+  color: #e2e8f0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-ocean-950);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold-dark);
+  border-radius: 3px;
+}
+
+/* ── Typography ── */
+.font-serif {
+  font-family: var(--font-serif);
+}
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* ── Gold Gradient Text ── */
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--color-gold-light) 0%, var(--color-gold) 50%, var(--color-gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Parallax Hero ── */
+.hero-parallax {
+  will-change: transform;
+}
+
+/* ── Glassmorphism Card ── */
+.glass-card {
+  background: rgba(9, 25, 33, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(201, 169, 110, 0.12);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.glass-card:hover {
+  background: rgba(9, 25, 33, 0.8);
+  border-color: rgba(201, 169, 110, 0.35);
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+              0 0 40px rgba(201, 169, 110, 0.08);
+}
+
+/* ── CTA Button ── */
+.cta-btn {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-gold-dark) 0%, var(--color-gold) 100%);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.6s ease;
+}
+
+.cta-btn:hover::before {
+  left: 100%;
+}
+
+.cta-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(201, 169, 110, 0.3);
+}
+
+/* ── Divider Line ── */
+.gold-line {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+/* ── Floating Particles ── */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* ── Section Reveal ── */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(60px);
+}
+
+/* ── Navbar ── */
+.navbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
+}
+
+.navbar.scrolled {
+  background: rgba(4, 13, 18, 0.9);
+  border-bottom: 1px solid rgba(201, 169, 110, 0.15);
+}
+
+/* ── Custom Overlays & Opacity Helpers ── */
+.bg-gold-5 { background-color: rgba(201, 169, 110, 0.05) !important; }
+.bg-gold-10 { background-color: rgba(201, 169, 110, 0.1) !important; }
+.bg-gold-20 { background-color: rgba(201, 169, 110, 0.2) !important; }
+.border-gold-10 { border-color: rgba(201, 169, 110, 0.1) !important; }
+.border-gold-15 { border-color: rgba(201, 169, 110, 0.15) !important; }
+.border-gold-20 { border-color: rgba(201, 169, 110, 0.2) !important; }
+.border-gold-35 { border-color: rgba(201, 169, 110, 0.35) !important; }
+.border-gold-50 { border-color: rgba(201, 169, 110, 0.5) !important; }
+
+.hero-overlay-b {
+  background: linear-gradient(to bottom, rgba(4, 13, 18, 0.9) 0%, rgba(4, 13, 18, 0.45) 50%, rgba(4, 13, 18, 1) 100%) !important;
+}
+.hero-overlay-r {
+  background: linear-gradient(to right, rgba(4, 13, 18, 0.75) 0%, transparent 100%) !important;
+}
+.detection-overlay-t {
+  background: linear-gradient(to top, rgba(4, 13, 18, 0.6) 0%, transparent 100%) !important;
+}
+
