@@ -50,45 +50,33 @@ const Particles = () => {
 /* ═══════════════════════════════════════════════════════════
    NAVBAR
    ═══════════════════════════════════════════════════════════ */
-const Navbar = () => {
+const Navbar = ({ onExploreGallery }) => {
   const [scrolled, setScrolled] = useState(false);
-  const navRef = useRef(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useGSAP(() => {
-    gsap.from(navRef.current, {
-      y: -30,
-      opacity: 0,
-      duration: 1,
-      delay: 0.3,
-      ease: 'power3.out',
-    });
-  }, { scope: navRef });
-
   return (
-    <nav
-      ref={navRef}
-      className={`navbar fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-5 flex items-center justify-between ${
-        scrolled ? 'scrolled' : ''
+    <nav 
+      className={`navbar fixed top-0 left-0 w-full z-[100] px-6 md:px-12 py-5 flex items-center justify-between transition-colors duration-500 transform-gpu border-none ${
+        scrolled ? 'bg-[#0a0a0a] shadow-xl' : 'bg-transparent'
       }`}
     >
       <div className="flex items-center gap-3">
         {/* Logo Icon */}
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="opacity-80">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="opacity-100">
           <circle cx="16" cy="16" r="14" stroke="#c9a96e" strokeWidth="1.5" />
           <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
           <path d="M10 18 Q16 10 22 18" stroke="#c9a96e" strokeWidth="1" fill="none" />
         </svg>
-        <span className="font-serif text-lg tracking-widest text-gradient-gold uppercase">
+        <span className="font-serif text-lg tracking-widest text-gradient-gold uppercase font-semibold">
           CoralLens
         </span>
       </div>
-      <div className="hidden md:flex items-center gap-8 text-sm tracking-wider text-gray-400">
+      <div className="hidden md:flex items-center gap-8 text-sm tracking-wider text-white">
         <a href="#about" className="hover:text-[var(--color-gold)] transition-colors duration-300">
           Tentang
         </a>
@@ -98,6 +86,9 @@ const Navbar = () => {
         <a href="#detection" className="hover:text-[var(--color-gold)] transition-colors duration-300">
           Deteksi
         </a>
+        <button onClick={onExploreGallery} className="hover:text-[var(--color-gold)] transition-colors duration-300 uppercase">
+          Galeri
+        </button>
       </div>
     </nav>
   );
@@ -268,7 +259,7 @@ const row2Images = [
   "Turbinaria (Foliose Coral  Vase).png"
 ];
 
-const GallerySection = () => {
+const GallerySection = ({ onExploreGallery }) => {
   return (
     <section id="gallery" className="relative py-24 md:py-32 bg-[var(--color-ocean-950)] overflow-hidden">
       {/* Title */}
@@ -320,9 +311,12 @@ const GallerySection = () => {
 
       {/* Center Floating Button Overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 mt-16">
-        <div className="glass-card px-8 py-4 pointer-events-auto cursor-pointer border border-gold-20 hover:border-gold-50 transition-all rounded-sm uppercase tracking-[0.3em] text-[var(--color-gold)] font-sans text-xs">
+        <button 
+          onClick={onExploreGallery}
+          className="glass-card px-8 py-4 pointer-events-auto cursor-pointer border border-gold-20 hover:border-gold-50 hover:bg-[var(--color-gold)]/10 transition-all rounded-sm uppercase tracking-[0.3em] text-[var(--color-gold)] font-sans text-xs"
+        >
           Explore Gallery
-        </div>
+        </button>
       </div>
     </section>
   );
@@ -703,23 +697,13 @@ const FeaturesSection = () => {
       }
     );
 
-    // Floating mockup
-    gsap.to(phoneRef.current, {
-      y: -15,
-      duration: 3,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      delay: 1.2
-    });
-
   }, { scope: sectionRef });
 
   return (
     <section
       id="features"
       ref={sectionRef}
-      className="relative py-28 md:py-36 px-6 overflow-hidden"
+      className="relative py-28 md:py-36 px-6"
     >
       <div className="max-w-7xl mx-auto">
         
@@ -740,10 +724,10 @@ const FeaturesSection = () => {
         </div>
 
         {/* 3-Column Layout */}
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 relative z-10">
+        <div className="flex flex-col lg:flex-row items-stretch justify-center gap-8 lg:gap-12 relative z-10">
           
           {/* Left Column (Cards 1 & 2) */}
-          <div className="flex flex-col gap-6 w-full lg:w-[30%]">
+          <div className="flex flex-col justify-start gap-16 w-full lg:w-[30%] lg:pt-10 lg:pb-32">
             {[features[0], features[1]].map((f, i) => (
               <div key={i} className="feature-card glass-card rounded-[1.5rem] p-8 border border-white/5 hover:border-gold-30 transition-all duration-300 hover:bg-white/[0.03]">
                 <div className="mb-6 bg-white/5 w-12 h-12 rounded-xl flex items-center justify-center border border-white/10">{f.icon}</div>
@@ -754,31 +738,34 @@ const FeaturesSection = () => {
           </div>
 
           {/* Center Column (System / Phone Mockup) */}
-          <div className="w-full lg:w-[35%] flex justify-center relative my-8 lg:my-0">
-            <div ref={phoneRef} className="relative w-full max-w-[280px] bg-[#02080a] border border-white/10 rounded-[3rem] p-2 shadow-2xl shadow-black z-10" style={{aspectRatio: "9/19"}}>
-              {/* Screen Content */}
-              <div className="w-full h-full rounded-[2.5rem] overflow-hidden relative bg-[var(--color-ocean-950)] border border-white/5">
-                <img src="/detection-demo.png" alt="System Demo" className="w-full h-full object-cover opacity-60 mix-blend-luminosity" />
-                
-                {/* Gradient overlay to make logo pop */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#02080a]/20 via-[#02080a]/60 to-[#02080a]" />
-                
-                {/* Center Logo/Text inside mockup */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <svg width="48" height="48" viewBox="0 0 32 32" fill="none" className="mb-4">
-                    <circle cx="16" cy="16" r="14" stroke="#c9a96e" strokeWidth="1.5" />
-                    <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
-                  </svg>
-                  <span className="font-serif text-3xl tracking-widest text-white uppercase opacity-90">CoralLens</span>
+          <div className="w-full lg:w-[35%] relative my-8 lg:my-0">
+            {/* Native CSS Sticky Container */}
+            <div className="lg:sticky lg:top-32 flex flex-col items-center justify-start w-full h-full lg:h-auto">
+              <div ref={phoneRef} className="relative w-full max-w-[280px] bg-[#02080a] border border-white/10 rounded-[3rem] p-2 shadow-2xl shadow-black z-10" style={{aspectRatio: "9/19"}}>
+                {/* Screen Content */}
+                <div className="w-full h-full rounded-[2.5rem] overflow-hidden relative bg-[var(--color-ocean-950)] border border-white/5">
+                  <img src="/detection-demo.png" alt="System Demo" className="w-full h-full object-cover opacity-60 mix-blend-luminosity" />
+                  
+                  {/* Gradient overlay to make logo pop */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#02080a]/20 via-[#02080a]/60 to-[#02080a]" />
+                  
+                  {/* Center Logo/Text inside mockup */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <svg width="48" height="48" viewBox="0 0 32 32" fill="none" className="mb-4">
+                      <circle cx="16" cy="16" r="14" stroke="#c9a96e" strokeWidth="1.5" />
+                      <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
+                    </svg>
+                    <span className="font-serif text-3xl tracking-widest text-white uppercase opacity-90">CoralLens</span>
+                  </div>
                 </div>
               </div>
+              {/* Ambient Background Glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[var(--color-gold)] opacity-[0.04] blur-[100px] pointer-events-none z-0" />
             </div>
-            {/* Ambient Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[80%] bg-[var(--color-gold)] opacity-[0.04] blur-[100px] pointer-events-none z-0" />
           </div>
 
           {/* Right Column (Cards 3 & 4) */}
-          <div className="flex flex-col gap-6 w-full lg:w-[30%]">
+          <div className="flex flex-col justify-end gap-16 w-full lg:w-[30%] lg:pt-32 lg:pb-10">
             {[features[2], features[3]].map((f, i) => (
               <div key={i} className="feature-card glass-card rounded-[1.5rem] p-8 border border-white/5 hover:border-gold-30 transition-all duration-300 hover:bg-white/[0.03]">
                 <div className="mb-6 bg-white/5 w-12 h-12 rounded-xl flex items-center justify-center border border-white/10">{f.icon}</div>
@@ -976,7 +963,7 @@ const Footer = () => {
 /* ═══════════════════════════════════════════════════════════
    LANDING PAGE (Main Component)
    ═══════════════════════════════════════════════════════════ */
-const LandingPage = ({ onStartDetection }) => {
+const LandingPage = ({ onStartDetection, onExploreGallery }) => {
   // ── Lenis Smooth Scroll ──
   useEffect(() => {
     const lenis = new Lenis({
@@ -992,7 +979,24 @@ const LandingPage = ({ onStartDetection }) => {
     });
     gsap.ticker.lagSmoothing(0);
 
+    // Handle smooth scrolling for anchor links
+    const handleAnchorClick = (e) => {
+      const targetId = e.currentTarget.getAttribute('href');
+      if (targetId && targetId.startsWith('#')) {
+        e.preventDefault();
+        lenis.scrollTo(targetId, { offset: -80 }); // Offset for the fixed navbar
+      }
+    };
+
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    anchors.forEach(anchor => {
+      anchor.addEventListener('click', handleAnchorClick);
+    });
+
     return () => {
+      anchors.forEach(anchor => {
+        anchor.removeEventListener('click', handleAnchorClick);
+      });
       lenis.destroy();
       gsap.ticker.remove(lenis.raf);
     };
@@ -1001,9 +1005,9 @@ const LandingPage = ({ onStartDetection }) => {
   return (
     <div className="relative min-h-screen bg-[var(--color-ocean-950)]">
       <Particles />
-      <Navbar />
+      <Navbar onExploreGallery={onExploreGallery} />
       <HeroSection onStartDetection={onStartDetection} />
-      <GallerySection />
+      <GallerySection onExploreGallery={onExploreGallery} />
       <AboutSection />
       <DatasetSection />
       <FeaturesSection />

@@ -143,11 +143,12 @@ body {
 .navbar {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  transform: translateZ(0); /* Mencegah glitch render di Chrome/Windows */
   transition: all 0.4s ease;
 }
 
 .navbar.scrolled {
-  background: rgba(4, 13, 18, 0.9);
+  background: rgba(4, 13, 18, 0.95);
   border-bottom: 1px solid rgba(201, 169, 110, 0.15);
 }
 
@@ -241,4 +242,15 @@ body {
   transform: scale(1.1);
 }
 
+/* ── AI Scan Animation ── */
+.scan-laser {
+  animation: scanMove 2.5s linear infinite;
+  box-shadow: 0 0 20px 5px rgba(201, 169, 110, 0.6);
+}
 
+@keyframes scanMove {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
