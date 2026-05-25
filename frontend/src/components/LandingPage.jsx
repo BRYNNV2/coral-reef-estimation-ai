@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
+import { Menu, X } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,6 +53,7 @@ const Particles = () => {
    ═══════════════════════════════════════════════════════════ */
 const Navbar = ({ onExploreGallery }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -60,37 +62,70 @@ const Navbar = ({ onExploreGallery }) => {
   }, []);
 
   return (
-    <nav 
-      className={`navbar fixed top-0 left-0 w-full z-[100] px-6 md:px-12 py-5 flex items-center justify-between transition-colors duration-500 transform-gpu border-none ${
-        scrolled ? 'bg-[#0a0a0a] shadow-xl' : 'bg-transparent'
-      }`}
-    >
-      <div className="flex items-center gap-3">
-        {/* Logo Icon */}
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="opacity-100">
-          <circle cx="16" cy="16" r="14" stroke="#c9a96e" strokeWidth="1.5" />
-          <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
-          <path d="M10 18 Q16 10 22 18" stroke="#c9a96e" strokeWidth="1" fill="none" />
-        </svg>
-        <span className="font-serif text-lg tracking-widest text-gradient-gold uppercase font-semibold">
-          CoralLens
-        </span>
-      </div>
-      <div className="hidden md:flex items-center gap-8 text-sm tracking-wider text-white">
-        <a href="#about" className="hover:text-[var(--color-gold)] transition-colors duration-300">
-          Tentang
-        </a>
-        <a href="#features" className="hover:text-[var(--color-gold)] transition-colors duration-300">
-          Fitur
-        </a>
-        <a href="#detection" className="hover:text-[var(--color-gold)] transition-colors duration-300">
-          Deteksi
-        </a>
-        <button onClick={onExploreGallery} className="hover:text-[var(--color-gold)] transition-colors duration-300 uppercase">
-          Galeri
+    <>
+      <nav 
+        className={`navbar fixed top-0 left-0 w-full z-[100] px-6 md:px-12 py-5 flex items-center justify-between transition-colors duration-500 transform-gpu border-none ${
+          scrolled ? 'bg-[#0a0a0a] shadow-xl' : 'bg-transparent'
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          {/* Logo Icon */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="opacity-100">
+            <circle cx="16" cy="16" r="14" stroke="#c9a96e" strokeWidth="1.5" />
+            <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
+            <path d="M10 18 Q16 10 22 18" stroke="#c9a96e" strokeWidth="1" fill="none" />
+          </svg>
+          <span className="font-serif text-lg tracking-widest text-gradient-gold uppercase font-semibold">
+            CoralLens
+          </span>
+        </div>
+        
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-8 text-sm tracking-wider text-white">
+          <a href="#about" className="hover:text-[var(--color-gold)] transition-colors duration-300">
+            Tentang
+          </a>
+          <a href="#features" className="hover:text-[var(--color-gold)] transition-colors duration-300">
+            Fitur
+          </a>
+          <a href="#detection" className="hover:text-[var(--color-gold)] transition-colors duration-300">
+            Deteksi
+          </a>
+          <button onClick={onExploreGallery} className="hover:text-[var(--color-gold)] transition-colors duration-300 uppercase">
+            Galeri
+          </button>
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          className="md:hidden text-[var(--color-gold)] p-2 focus:outline-none"
+          onClick={() => setMobileMenuOpen(true)}
+        >
+          <Menu size={24} />
         </button>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Menu Fullscreen Dropdown */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[200] bg-[#0a0a0a]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 md:hidden text-white transition-all">
+          <button 
+            className="absolute top-6 right-6 text-[var(--color-gold)] p-2"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <X size={32} />
+          </button>
+          <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest hover:text-[var(--color-gold)] transition-colors">Tentang</a>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest hover:text-[var(--color-gold)] transition-colors">Fitur</a>
+          <a href="#detection" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest hover:text-[var(--color-gold)] transition-colors">Deteksi</a>
+          <button 
+            onClick={() => { setMobileMenuOpen(false); onExploreGallery(); }} 
+            className="text-2xl font-serif tracking-widest text-[var(--color-gold)] uppercase mt-4 border border-gold-20 px-8 py-3 rounded-full bg-gold-5"
+          >
+            Masuk Galeri
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -180,16 +215,21 @@ const HeroSection = ({ onStartDetection }) => {
       ref={sectionRef}
       className="relative h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Background Image with parallax */}
+      {/* Background Video with parallax */}
       <div
         ref={bgRef}
         className="hero-parallax absolute inset-0 -top-[10%] -bottom-[10%]"
       >
-        <img
-          src="/hero-bg.png"
-          alt="Coral Reef Underwater"
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/hero-bg.png"
           className="w-full h-full object-cover"
-        />
+        >
+          <source src="/Section 1 Terumbu karang.mp4" type="video/mp4" />
+        </video>
         {/* Dark overlay gradient */}
         <div className="absolute inset-0 hero-overlay-b" />
         <div className="absolute inset-0 hero-overlay-r" />
@@ -325,9 +365,59 @@ const GallerySection = ({ onExploreGallery }) => {
 /* ═══════════════════════════════════════════════════════════
    ABOUT SECTION — Split Layout with Tilted Card
    ═══════════════════════════════════════════════════════════ */
+const initialDiseaseCards = [
+  {
+    id: 1,
+    title: "Coral Bleaching",
+    type: "Kritis",
+    species: "Stres Lingkungan",
+    image: "/corals/Diploria (Brain Coral  Massive).png",
+    symptoms: "Karang berubah putih/pucat karena kehilangan zooxanthellae. Ini bukan penyakit infeksi, tapi stres akibat suhu tinggi, polusi, atau cahaya berlebih.",
+    impact: "Karang kehilangan sumber nutrisi utamanya, rentan mati kelaparan, dan sangat rawan terhadap penyakit infeksi sekunder."
+  },
+  {
+    id: 2,
+    title: "Black Band Disease",
+    type: "Infeksi",
+    species: "Pita Hitam",
+    image: "/corals/Acropora (Branching Coral).png",
+    symptoms: "Ada pita/lapisan hitam yang bergerak di permukaan karang, jaringan karang mati di belakangnya.",
+    impact: "Menghancurkan jaringan karang dengan cepat. Wabah ini sangat agresif dan sering memburuk saat perairan menghangat."
+  },
+  {
+    id: 3,
+    title: "White Band Disease",
+    type: "Infeksi",
+    species: "Pita Putih",
+    image: "/corals/Acropora Hyacinthus (Table Coral).png",
+    symptoms: "Muncul garis/pita putih pada karang bercabang, jaringan karang mengelupas dan menyisakan rangka putih.",
+    impact: "Menyebabkan kematian jaringan yang luas, khususnya merusak struktur habitat karang bercabang."
+  }
+];
+
 const AboutSection = () => {
+  const [cards, setCards] = useState(initialDiseaseCards);
+  const [activeDisease, setActiveDisease] = useState(null);
   const sectionRef = useRef(null);
   const cardRef = useRef(null);
+
+  const handleCardClick = (clickedId) => {
+    setCards(prevCards => {
+      const index = prevCards.findIndex(c => c.id === clickedId);
+      
+      // Jika yang ditekan adalah kartu yang sudah di paling depan
+      if (index === 0) {
+        setActiveDisease(prevCards[0]);
+        return prevCards;
+      }
+      
+      // Jika kartu di belakang, bawa ke depan
+      const newCards = [...prevCards];
+      const clickedCard = newCards.splice(index, 1)[0];
+      newCards.unshift(clickedCard);
+      return newCards;
+    });
+  };
 
   useGSAP(() => {
     // Reveal text
@@ -352,11 +442,10 @@ const AboutSection = () => {
 
     // Animate Card (entrance)
     gsap.fromTo(cardRef.current,
-      { y: 80, opacity: 0, rotation: -10 },
+      { y: 40, opacity: 0 },
       {
-        y: -10, // Lift the base position of the card up
+        y: 0, // Natural base position
         opacity: 1,
-        rotation: 4,
         duration: 1.5,
         ease: 'power3.out',
         scrollTrigger: {
@@ -366,17 +455,6 @@ const AboutSection = () => {
         },
       }
     );
-
-    // Floating effect for card (continuous)
-    gsap.to(cardRef.current, {
-      y: -25, // Move slightly higher during the float
-      rotation: 6,
-      duration: 3.5, // slightly faster to feel more buoyant
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-      delay: 1.5 // Start after initial reveal
-    });
 
   }, { scope: sectionRef });
 
@@ -410,39 +488,113 @@ const AboutSection = () => {
           </p>
         </div>
 
-        {/* Right Side: Image Card */}
-        <div className="flex-1 w-full flex justify-center md:justify-end relative">
-          <div 
-            ref={cardRef} 
-            className="relative w-full max-w-[400px] rounded-[2.5rem] overflow-hidden border-2 border-gold-20 shadow-2xl shadow-black/60 transform rotate-6 z-10"
-            style={{ aspectRatio: '4/5' }}
-          >
-            <img 
-              src="/corals/Diploria (Brain Coral  Massive).png" 
-              alt="Diploria Coral" 
-              className="w-full h-full object-cover scale-110"
-            />
-            {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#040d12] via-transparent to-transparent opacity-90" />
+        {/* Right Side: Image Cards Stack */}
+        <div className="flex-1 w-full flex justify-center md:justify-end relative mt-12 md:mt-0">
+          
+          <div ref={cardRef} className="relative w-full max-w-[400px] group" style={{ aspectRatio: '4/5' }}>
             
-            {/* Card Content */}
-            <div className="absolute bottom-10 left-8 right-8">
-              <h3 className="font-serif text-3xl text-white mb-2 uppercase tracking-wide">Brain Coral</h3>
-              <div className="flex items-center gap-3">
-                <span className="bg-white text-black font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-widest">
-                  Massive
-                </span>
-                <span className="text-[var(--color-gold)] font-sans text-[10px] tracking-widest uppercase">
-                  Diploria
-                </span>
-              </div>
-            </div>
+            {cards.slice().reverse().map((card, idxReversed) => {
+              const originalIndex = (cards.length - 1) - idxReversed; // 0 for front, 1 for middle, 2 for back
+              
+              let stylingClass = "";
+              if (originalIndex > 2) {
+                 // Hidden cards behind the stack
+                 stylingClass = "opacity-0 pointer-events-none transform -rotate-[10deg] -translate-x-12 scale-[0.80] z-0";
+              } else if (originalIndex === 2) {
+                 // Back card
+                 stylingClass = "transform -rotate-[10deg] -translate-x-12 scale-[0.85] z-10 opacity-60 group-hover:-translate-x-44 group-hover:-rotate-[15deg] group-hover:scale-95 group-hover:opacity-100 group-hover:z-30 transition-all duration-700 ease-out cursor-pointer";
+              } else if (originalIndex === 1) {
+                 // Middle card
+                 stylingClass = "transform -rotate-[3deg] -translate-x-6 scale-90 z-20 opacity-80 group-hover:-translate-x-20 group-hover:-rotate-[5deg] group-hover:scale-100 group-hover:opacity-100 group-hover:z-40 transition-all duration-700 ease-out cursor-pointer";
+              } else {
+                 // Front card
+                 stylingClass = "transform rotate-4 z-30 group-hover:rotate-0 group-hover:scale-105 group-hover:z-50 transition-all duration-700 ease-out cursor-pointer bg-[#040d12]";
+              }
+
+              return (
+                <div 
+                  key={card.id} 
+                  onClick={() => handleCardClick(card.id)}
+                  className={`absolute inset-0 rounded-[2.5rem] overflow-hidden border-2 border-gold-20 shadow-2xl shadow-black/60 ${stylingClass}`}
+                >
+                  <img src={card.image} alt={card.title} className={`w-full h-full object-cover ${originalIndex === 0 ? 'scale-110' : ''}`} />
+                  
+                  {/* Overlay Layer */}
+                  <div className={`absolute inset-0 transition-colors duration-700 ${originalIndex === 0 ? 'bg-gradient-to-t from-[#040d12] via-transparent to-transparent opacity-90' : originalIndex === 1 ? 'bg-black/30 group-hover:bg-transparent mix-blend-multiply' : 'bg-black/50 group-hover:bg-black/10 mix-blend-multiply'}`} />
+                  
+                  {/* Card Content (Only visible on front card) */}
+                  <div className={`absolute bottom-10 left-8 right-8 transition-opacity duration-300 ${originalIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
+                    <h3 className="font-serif text-3xl text-white mb-2 uppercase tracking-wide">{card.title}</h3>
+                    <div className="flex items-center gap-3">
+                      <span className="bg-white text-black font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-widest">{card.type}</span>
+                      <span className="text-[var(--color-gold)] font-sans text-[10px] tracking-widest uppercase">{card.species}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
           </div>
           
           {/* Decorative background glow behind the card */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[var(--color-gold)] opacity-[0.03] blur-[100px] rounded-full pointer-events-none z-0" />
+          
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[9px] text-[var(--color-gold)] tracking-widest uppercase opacity-70 animate-pulse text-center w-full">
+            Klik kartu terdepan untuk melihat detail penyakit
+          </div>
         </div>
       </div>
+
+      {/* Disease Detail Modal */}
+      {activeDisease && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setActiveDisease(null)} />
+          <div className="relative w-full max-w-2xl bg-[#0a0a0a] border border-gold-20 rounded-2xl overflow-hidden shadow-2xl z-10 flex flex-col md:flex-row transform transition-all">
+            
+            {/* Modal Image */}
+            <div className="w-full md:w-5/12 h-48 md:h-auto relative border-b md:border-b-0 md:border-r border-white/10">
+              <img src={activeDisease.image} alt={activeDisease.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent md:bg-gradient-to-r" />
+              <div className="absolute top-4 left-4 bg-red-600/90 text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full border border-red-500/30">
+                {activeDisease.type}
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="w-full md:w-7/12 p-8 flex flex-col justify-center">
+              <button 
+                onClick={() => setActiveDisease(null)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+              
+              <h3 className="font-serif text-3xl text-gradient-gold uppercase mb-1">{activeDisease.title}</h3>
+              <p className="text-gray-400 text-xs tracking-widest uppercase mb-6">{activeDisease.species}</p>
+              
+              <div className="mb-5">
+                <h4 className="text-[var(--color-gold)] text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-gold)]" />
+                  Gejala & Ciri-Ciri
+                </h4>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {activeDisease.symptoms}
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="text-red-400 text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  Dampak pada Ekosistem
+                </h4>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  {activeDisease.impact}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

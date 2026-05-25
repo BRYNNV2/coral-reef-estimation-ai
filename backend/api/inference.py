@@ -2,10 +2,14 @@
 FastAPI Inference Endpoint untuk Coral Reef Segmentation
 """
 
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from pydantic import BaseModel
 from typing import Optional
 import time
+import io
+import numpy as np
+from PIL import Image
+from rembg import remove
 
 import sys
 from pathlib import Path
@@ -54,7 +58,10 @@ def get_model() -> CoralSegmentationModel:
 
 # ── Endpoints ──────────────────────────────────────────────
 @router.post("/predict", response_model=InferenceResponse)
-async def predict_coral_damage(file: UploadFile = File(...)):
+async def predict_coral_damage(
+    file: UploadFile = File(...),
+    threshold: float = Form(0.5)
+):
     """
     Endpoint utama untuk prediksi kerusakan terumbu karang.
 
@@ -97,11 +104,29 @@ async def predict_coral_damage(file: UploadFile = File(...)):
             }
         )
 
-    # ── 2. Baca & Preprocessing ────────────────────────────
+    # ── 2. Baca & Background Removal & Preprocessing ──
     try:
         image_bytes = await file.read()
+        
+        # Background Removal menggunakan rembg
+        bg_removed_bytes = remove(image_bytes)
+        
+        # Ekstrak Alpha Channel untuk mendapatkan mask karang (foreground)
+        bg_img = Image.open(io.BytesIO(bg_removed_bytes)).convert("RGBA")
+        rgba_image = np.array(bg_img)  # Simpan RGBA untuk overlay
+        bg_img_resized = bg_img.resize((IMG_SIZE, IMG_SIZE), Image.Resampling.NEAREST)
+        alpha_channel = np.array(bg_img_resized)[..., 3]
+        coral_mask = alpha_channel > 0  # Mask piksel karang asli
+        total_coral_pixels = int(np.sum(coral_mask))
+        
+        # Fallback jika rembg tidak mendeteksi objek sama sekali
+        if total_coral_pixels == 0:
+            total_coral_pixels = alpha_channel.size
+            coral_mask = np.ones_like(alpha_channel, dtype=bool)
+
+        # Preprocessing tensor untuk U-Net (background transparan jadi hitam)
         tensor, original_image = preprocess_image(
-            image_bytes, img_size=IMG_SIZE, mean=MEAN, std=STD
+            bg_removed_bytes, img_size=IMG_SIZE, mean=MEAN, std=STD
         )
     except Exception as e:
         raise HTTPException(
@@ -113,7 +138,23 @@ async def predict_coral_damage(file: UploadFile = File(...)):
     try:
         model = get_model()
         start_time = time.time()
-        result = model.predict_with_stats(tensor)
+        result = model.predict_with_stats(tensor, threshold=threshold)
+        
+        # --- KALKULASI AKURAT BERDASARKAN CORAL MASK ---
+        # Hanya hitung piksel rusak yang benar-benar berada di area karang
+        actual_damaged_mask = (result["mask"] == 1) & coral_mask
+        damaged_pixels = int(np.sum(actual_damaged_mask))
+        
+        damage_pct = (damaged_pixels / total_coral_pixels) * 100 if total_coral_pixels > 0 else 0
+        healthy_pct = 100 - damage_pct
+        
+        # Update result dengan statistik yang sudah dikoreksi
+        result["damage_percentage"] = round(damage_pct, 2)
+        result["healthy_percentage"] = round(healthy_pct, 2)
+        result["total_pixels"] = total_coral_pixels
+        result["damaged_pixels"] = damaged_pixels
+        result["mask"] = actual_damaged_mask.astype(np.float32)  # Update mask agar visualisasi bersih dari air
+
         inference_ms = round((time.time() - start_time) * 1000, 2)
     except FileNotFoundError:
         raise HTTPException(
@@ -130,7 +171,8 @@ async def predict_coral_damage(file: UploadFile = File(...)):
         )
 
     # ── 4. Buat Overlay Visualisasi ────────────────────────
-    overlay = create_overlay(original_image, result["mask"])
+    # Menggunakan rgba_image agar background air laut tetap transparan
+    overlay = create_overlay(rgba_image, result["mask"])
 
     # ── 5. Return Response ─────────────────────────────────
     return InferenceResponse(

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { ArrowLeft, Upload, FileImage, ShieldCheck, Activity, Award, Clock, Download, RefreshCw, Zap, Info } from 'lucide-react';
+import { ArrowLeft, Upload, FileImage, ShieldCheck, Activity, Award, Clock, Download, RefreshCw, Zap, Info, Printer } from 'lucide-react';
 import { PieChart, Pie, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip as RechartsTooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 
@@ -71,6 +71,8 @@ const Dashboard = ({ onBack }) => {
   const [showOriginal, setShowOriginal] = useState(false);
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [error, setError] = useState(null);
+  const [threshold, setThreshold] = useState(50); // Sensitivitas (10-90)
+  const [sessionHistory, setSessionHistory] = useState([]); // Riwayat Analisis Lokal
 
   const containerRef = useRef(null);
 
@@ -143,6 +145,7 @@ const Dashboard = ({ onBack }) => {
 
     const formData = new FormData();
     formData.append('file', selectedFile);
+    formData.append('threshold', (threshold / 100).toString());
 
     try {
       const response = await fetch('http://localhost:8000/api/v1/predict', {
@@ -158,6 +161,22 @@ const Dashboard = ({ onBack }) => {
       const resData = await response.json();
       if (resData.success) {
         setResult(resData.data);
+        
+        // Simpan ke riwayat lokal sesi ini (maksimal 10 terakhir)
+        setSessionHistory(prev => {
+          const newItem = {
+            id: Date.now(),
+            time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            filename: selectedFile.name,
+            damage: resData.data.damage_percentage,
+            image: `data:image/png;base64,${resData.data.overlay_base64}`,
+            rawResult: resData.data,
+            previewUrl: imagePreview,
+            fileObj: selectedFile
+          };
+          return [newItem, ...prev].slice(0, 10);
+        });
+
       } else {
         throw new Error(resData.message || 'Terjadi kesalahan sistem.');
       }
@@ -174,8 +193,8 @@ const Dashboard = ({ onBack }) => {
   const handleDownload = () => {
     if (!result || !result.overlay_base64) return;
     const link = document.createElement('a');
-    link.href = `data:image/jpeg;base64,${result.overlay_base64}`;
-    link.download = `CoralLens-Scan-${Date.now()}.jpg`;
+    link.href = `data:image/png;base64,${result.overlay_base64}`;
+    link.download = `CoralLens-Scan-${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -189,6 +208,18 @@ const Dashboard = ({ onBack }) => {
     setShowOriginal(false);
   };
 
+  const handleRestoreHistory = (item) => {
+    if (!item.rawResult) {
+      setError("Riwayat ini dibuat sebelum fitur pemulihan ditambahkan. Silakan unggah ulang gambar.");
+      return;
+    }
+    setResult(item.rawResult);
+    setImagePreview(item.previewUrl);
+    setSelectedFile(item.fileObj);
+    setShowOriginal(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div ref={containerRef} className="relative min-h-screen bg-[var(--color-ocean-950)] text-white pt-32 pb-16 px-4 md:px-8 overflow-x-hidden">
       <DashboardParticles />
@@ -200,7 +231,7 @@ const Dashboard = ({ onBack }) => {
           className="flex items-center gap-2 text-sm text-[var(--color-gold)] hover:text-[var(--color-gold-light)] transition-all cursor-pointer"
         >
           <ArrowLeft size={16} />
-          <span>Kembali ke Beranda</span>
+          <span className="hidden md:inline">Kembali ke Beranda</span>
         </button>
 
         <div className="flex items-center gap-3">
@@ -215,7 +246,7 @@ const Dashboard = ({ onBack }) => {
       </header>
 
       {/* Main Area */}
-      <main className="dash-container max-w-5xl mx-auto z-10 relative mt-8">
+      <main className={`dash-container mx-auto z-10 relative mt-8 print:hidden transition-all duration-500 ${sessionHistory.length > 0 && result && !isLoading ? 'max-w-[90rem]' : 'max-w-5xl'}`}>
         {/* Title */}
         <div className="text-center mb-10">
           <h1 className="font-serif text-3xl md:text-4xl text-gradient-gold mb-3 font-medium">
@@ -380,10 +411,13 @@ const Dashboard = ({ onBack }) => {
 
         {/* ── STEP 4: DETAILED AI ANALYSIS RESULTS ── */}
         {result && (
-          <div className="flex flex-col gap-8">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-              {/* Left Panel: Image Visualization */}
-              <div className="lg:col-span-3 glass-card rounded-2xl p-6 border border-gold-10 flex flex-col gap-5">
+          <div className="flex flex-col xl:flex-row gap-8 items-start">
+            
+            {/* Main Content Area (Left & Middle) */}
+            <div className="flex-1 flex flex-col gap-8 w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                {/* Left Panel: Image Visualization */}
+                <div className="lg:col-span-3 glass-card rounded-2xl p-6 border border-gold-10 flex flex-col gap-5">
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif text-md text-[var(--color-gold)] uppercase tracking-wider font-medium">
                     Visualisasi Analisis
@@ -418,7 +452,7 @@ const Dashboard = ({ onBack }) => {
                     src={
                       showOriginal
                         ? imagePreview
-                        : `data:image/jpeg;base64,${result.overlay_base64}`
+                        : `data:image/png;base64,${result.overlay_base64}`
                     }
                     alt="Coral Estimation View"
                     className="w-full h-full object-cover transition-all duration-300"
@@ -428,6 +462,43 @@ const Dashboard = ({ onBack }) => {
                       Deteksi Kerusakan (Merah)
                     </div>
                   )}
+                </div>
+
+                {/* Threshold Control Panel */}
+                <div className="glass-card rounded-xl p-5 border border-white/5 bg-black/20 mt-2">
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex items-center gap-2 cursor-help group relative">
+                      <label className="text-xs font-semibold text-[var(--color-gold)] uppercase tracking-wider">
+                        Sensitivitas Deteksi
+                      </label>
+                      <div className="w-4 h-4 rounded-full border border-gray-400 text-gray-400 flex items-center justify-center text-[9px]">?</div>
+                      {/* Tooltip */}
+                      <div className="absolute -top-10 left-0 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                        Atur seberapa agresif AI dalam mendeteksi kerusakan karang.
+                      </div>
+                    </div>
+                    <span className="text-xs text-white bg-white/10 px-2 py-1 rounded font-mono">
+                      {threshold}%
+                    </span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="10" max="90" step="1" 
+                    value={threshold} 
+                    onChange={(e) => setThreshold(e.target.value)}
+                    className="w-full accent-[var(--color-gold)] cursor-pointer h-1.5 bg-white/10 rounded-lg appearance-none"
+                  />
+                  <div className="flex justify-between text-[9px] text-gray-500 mt-2 font-medium uppercase tracking-wider">
+                    <span>Sangat Sensitif (Garis Kiri)</span>
+                    <span>Sangat Ketat (Garis Kanan)</span>
+                  </div>
+                  
+                  <button 
+                    onClick={handleAnalyze} 
+                    className="w-full mt-4 py-2.5 text-[10px] font-bold tracking-wider text-[var(--color-ocean-950)] bg-gradient-to-r from-[#c9a96e] to-[#b39560] hover:brightness-110 rounded-lg transition-all flex justify-center items-center gap-2 shadow-lg shadow-black/20"
+                  >
+                    TERAPKAN SENSITIVITAS
+                  </button>
                 </div>
               </div>
 
@@ -515,43 +586,64 @@ const Dashboard = ({ onBack }) => {
             {/* Model Evaluation Specs */}
             <div className="flex flex-col md:flex-row gap-4 items-stretch">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
-                <div className="glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3">
+                
+                {/* 1. Akurasi Model */}
+                <div className="group relative glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3 cursor-help">
                   <div className="w-8 h-8 rounded-lg bg-gold-5 flex items-center justify-center text-[var(--color-gold)]">
                     <ShieldCheck size={16} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Akurasi Model</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Akurasi (Global)</p>
                     <p className="text-xs font-semibold text-white">96.84% (UNet)</p>
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 text-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 pointer-events-none z-10">
+                    Akurasi bawaan model AI secara keseluruhan (saat dilatih), bukan metrik untuk gambar ini saja.
                   </div>
                 </div>
 
-                <div className="glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3">
+                {/* 2. Mean IoU */}
+                <div className="group relative glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3 cursor-help">
                   <div className="w-8 h-8 rounded-lg bg-gold-5 flex items-center justify-center text-[var(--color-gold)]">
                     <Activity size={16} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Mean IoU</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Mean IoU (Global)</p>
                     <p className="text-xs font-semibold text-white">88.92% (Val)</p>
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 text-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 pointer-events-none z-10">
+                    Nilai rata-rata presisi tumpang-tindih (IoU) dari evaluasi seluruh dataset pelatihan AI.
                   </div>
                 </div>
 
-                <div className="glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3">
+                {/* 3. F1-Score */}
+                <div className="group relative glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3 cursor-help">
                   <div className="w-8 h-8 rounded-lg bg-gold-5 flex items-center justify-center text-[var(--color-gold)]">
                     <Award size={16} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">F1-Score</p>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">F1-Score (Global)</p>
                     <p className="text-xs font-semibold text-white">93.07% (F1)</p>
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 text-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 pointer-events-none z-10">
+                    Skor performa ekuilibrium metrik model U-Net pada saat dievaluasi di laboratorium.
                   </div>
                 </div>
 
-                <div className="glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3">
+                {/* 4. Inference Speed */}
+                <div className="group relative glass-card rounded-xl p-4 border border-white/5 flex items-center gap-3 cursor-help">
                   <div className="w-8 h-8 rounded-lg bg-gold-5 flex items-center justify-center text-[var(--color-gold)]">
                     <Clock size={16} />
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">Inference Speed</p>
                     <p className="text-xs font-semibold text-white">{result.inference_time_ms} ms</p>
+                  </div>
+                  {/* Tooltip */}
+                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 text-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 pointer-events-none z-10">
+                    Waktu kilat yang dibutuhkan server AI untuk memproses gambar ini.
                   </div>
                 </div>
               </div>
@@ -578,16 +670,61 @@ const Dashboard = ({ onBack }) => {
                 Deteksi Gambar Lain
               </button>
               
-              <button
-                onClick={handleDownload}
-                className="w-full md:w-auto cta-btn text-[var(--color-ocean-950)] font-semibold text-xs tracking-wider uppercase px-8 py-3.5 rounded-full flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Download size={14} />
-                Simpan Hasil Scan Overlay
-              </button>
+              <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                <button
+                  onClick={() => window.print()}
+                  className="w-full md:w-auto px-8 py-3.5 rounded-full border border-gold-20 hover:bg-gold-5 text-[var(--color-gold)] text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Printer size={14} />
+                  Cetak Laporan
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="w-full md:w-auto cta-btn text-[var(--color-ocean-950)] font-semibold text-xs tracking-wider uppercase px-8 py-3.5 rounded-full flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Download size={14} />
+                  Simpan Gambar
+                </button>
+              </div>
             </div>
           </div>
-        )}
+
+          {/* ── SESSION HISTORY SIDEBAR (Right Panel) ── */}
+          {sessionHistory.length > 0 && !isLoading && (
+            <div className="w-full xl:w-[320px] shrink-0 sticky top-28 glass-card rounded-2xl p-6 border border-gold-20 bg-black/40 flex flex-col max-h-[calc(100vh-140px)]">
+              <h3 className="font-serif text-lg text-[var(--color-gold)] mb-4 flex items-center gap-2 shrink-0">
+                <Clock size={18} />
+                Riwayat Sesi Ini
+              </h3>
+              
+              <div className="flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
+                {sessionHistory.map(item => (
+                  <div 
+                    key={item.id} 
+                    onClick={() => handleRestoreHistory(item)}
+                    className="bg-[#0a0a0a] border border-white/10 rounded-xl p-3 flex flex-col gap-2 shrink-0 cursor-pointer hover:border-gold-30 hover:bg-gold-5/10 transition-all group"
+                  >
+                    <div className="w-full h-24 rounded-lg overflow-hidden border border-white/5 relative">
+                      <img src={item.image} alt={item.filename} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div className="text-[11px] text-gray-300 font-medium truncate mt-1" title={item.filename}>
+                      {item.filename}
+                    </div>
+                    <div className="flex justify-between items-center text-xs font-bold pt-1 border-t border-white/5">
+                      <span className="text-red-500">{item.damage}% Rusak</span>
+                      <span className="text-gray-500 text-[9px] bg-white/5 px-2 py-0.5 rounded-full">{item.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <p className="text-[9px] text-gray-500 mt-4 italic text-center shrink-0 border-t border-white/10 pt-3">
+                * Riwayat ini bersifat sementara dan hilang saat refresh.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
         {/* ── STATS MODAL (TRAINING HISTORY) ── */}
         {showStatsModal && (
@@ -609,7 +746,7 @@ const Dashboard = ({ onBack }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Loss Graph */}
-                <div className="bg-black/40 rounded-xl p-4 border border-white/5">
+                <div className="bg-black/40 rounded-xl p-4 border border-white/5 flex flex-col">
                   <h4 className="text-xs uppercase tracking-wider text-white font-medium mb-4 text-center">Model Loss (BCE + Dice)</h4>
                   <div className="w-full h-[250px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -624,10 +761,17 @@ const Dashboard = ({ onBack }) => {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
+                  {/* Explanation Box */}
+                  <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10 flex-1">
+                    <p className="text-[11px] text-gray-300 leading-relaxed">
+                      <strong className="text-[var(--color-gold)] uppercase tracking-wider text-[10px] block mb-1"></strong> 
+                      Grafik yang terus **menurun** membuktikan bahwa AI semakin "pintar" mengenali pola terumbu karang seiring waktu. Jarak yang sangat sempit antara garis kuning (*Training*) dan merah (*Validation*) adalah bukti otentik bahwa model ini tidak sekadar menghafal data (bebas *overfitting*).
+                    </p>
+                  </div>
                 </div>
 
                 {/* IoU Graph */}
-                <div className="bg-black/40 rounded-xl p-4 border border-white/5">
+                <div className="bg-black/40 rounded-xl p-4 border border-white/5 flex flex-col">
                   <h4 className="text-xs uppercase tracking-wider text-white font-medium mb-4 text-center">Mean IoU Metric</h4>
                   <div className="w-full h-[250px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -642,6 +786,13 @@ const Dashboard = ({ onBack }) => {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
+                  {/* Explanation Box */}
+                  <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10 flex-1">
+                    <p className="text-[11px] text-gray-300 leading-relaxed">
+                      <strong className="text-[var(--color-gold)] uppercase tracking-wider text-[10px] block mb-1"></strong> 
+                      *Intersection over Union* (IoU) mengukur presisi tebakan area. Grafik yang terus **menaik** mendekati 100 berarti AI ini berhasil menebak batas bentuk karang mati dengan ketelitian tingkat ahli (*pixel-perfect*).
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -649,6 +800,78 @@ const Dashboard = ({ onBack }) => {
         )}
 
       </main>
+
+      {/* ── PRINT ONLY REPORT ── */}
+      {result && (
+        <div className="hidden print:block bg-white text-black min-h-screen font-sans p-8 absolute inset-0 z-[9999]">
+          {/* Header */}
+          <div className="border-b-2 border-black pb-4 mb-8 flex justify-between items-end">
+            <div>
+              <h1 className="text-3xl font-extrabold uppercase tracking-widest text-black mb-1">CoralLens</h1>
+              <p className="text-sm text-gray-600 font-medium">Laporan Analisis Kesehatan Terumbu Karang AI</p>
+            </div>
+            <div className="text-right text-xs text-gray-500">
+              <p>Dicetak pada: {new Date().toLocaleString('id-ID')}</p>
+              <p>ID Pemindaian: #CL-{Date.now().toString().slice(-6)}</p>
+            </div>
+          </div>
+
+          <div className="flex gap-8 mb-8">
+            {/* Visual Output */}
+            <div className="w-1/2 flex flex-col">
+              <h2 className="text-lg font-bold mb-3 border-b border-gray-300 pb-1 uppercase tracking-wider text-gray-800">Visualisasi Deteksi</h2>
+              <img 
+                src={`data:image/png;base64,${result.overlay_base64}`} 
+                className="w-full rounded-lg border-2 border-gray-200 shadow-sm object-cover" 
+                alt="Hasil Scan" 
+                style={{ maxHeight: '400px' }}
+              />
+              <p className="text-[10px] text-red-600 mt-2 font-semibold">
+                * Area merah menunjukkan indikasi kerusakan jaringan karang (bleaching/mati) berdasarkan deteksi U-Net.
+              </p>
+            </div>
+            
+            {/* Metrics */}
+            <div className="w-1/2 flex flex-col">
+              <h2 className="text-lg font-bold mb-3 border-b border-gray-300 pb-1 uppercase tracking-wider text-gray-800">Ringkasan Metrik</h2>
+              
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-xs uppercase text-gray-500 font-semibold mb-1">Kondisi Rusak</p>
+                  <p className="text-3xl font-black text-red-600">{result.damage_percentage}%</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-xs uppercase text-gray-500 font-semibold mb-1">Kondisi Sehat</p>
+                  <p className="text-3xl font-black text-green-600">{result.healthy_percentage}%</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-xs uppercase text-gray-500 font-semibold mb-1">Total Piksel Karang</p>
+                  <p className="text-xl font-bold text-gray-800">{result.total_pixels.toLocaleString()}</p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-xs uppercase text-gray-500 font-semibold mb-1">Piksel Terdampak</p>
+                  <p className="text-xl font-bold text-gray-800">{result.damaged_pixels.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="p-5 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg text-sm">
+                <p className="font-bold text-blue-900 mb-2">Parameter Sistem & Model</p>
+                <ul className="list-disc ml-5 space-y-1 text-blue-800">
+                  <li><strong>Arsitektur:</strong> U-Net (EfficientNet-B3 Backbone)</li>
+                  <li><strong>Sensitivitas (Threshold):</strong> {threshold}%</li>
+                  <li><strong>Kecepatan Inferensi:</strong> {result.inference_time_ms} ms</li>
+                  <li><strong>Preprocessing:</strong> Rembg U²-Net (Background Removal)</li>
+                  <li><strong>Resolusi Analisis:</strong> 256x256 px</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center text-[10px] text-gray-400 mt-12 border-t pt-4 font-medium uppercase tracking-wider">
+            Dokumen ini dihasilkan secara otomatis oleh sistem CoralLens. Digunakan untuk keperluan riset dan observasi kelautan.
+          </div>
+        </div>
+      )}
     </div>
   );
 };

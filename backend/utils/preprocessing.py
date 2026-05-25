@@ -55,6 +55,11 @@ def create_overlay(
     )
     overlay = original_image.copy()
     damage_mask = mask_resized > 0.5
+    
+    # Adapt damage_color if original image is RGBA
+    if overlay.shape[-1] == 4 and len(damage_color) == 3:
+        damage_color = tuple(list(damage_color) + [255])
+        
     overlay[damage_mask] = (
         (1 - alpha) * overlay[damage_mask]
         + alpha * np.array(damage_color, dtype=np.float32)
@@ -73,9 +78,9 @@ def mask_to_base64(mask: np.ndarray) -> str:
 
 
 def overlay_to_base64(overlay: np.ndarray) -> str:
-    """Konversi overlay RGB image → base64 JPEG string."""
+    """Konversi overlay RGB/RGBA image → base64 PNG string."""
     pil_image = Image.fromarray(overlay)
     buffer = io.BytesIO()
-    pil_image.save(buffer, format="JPEG", quality=85)
+    pil_image.save(buffer, format="PNG")
     buffer.seek(0)
     return base64.b64encode(buffer.read()).decode("utf-8")

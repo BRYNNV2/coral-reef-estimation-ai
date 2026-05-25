@@ -14,6 +14,7 @@ const coralsData = [
     image: '/corals/Acropora (Branching Coral).png',
     desc: 'Bentuk karang bercabang yang menjadi habitat utama banyak ikan kecil. Tumbuh sangat cepat namun sangat rentan terhadap perubahan suhu laut dan pemutihan karang (bleaching).',
     price: 'A',
+    category: 'branching'
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const coralsData = [
     image: '/corals/Diploria (Brain Coral  Massive).png',
     desc: 'Bentuknya menyerupai otak manusia dengan alur-alur yang kompleks. Tumbuh sangat lambat, namun strukturnya yang padat membuatnya sangat kuat dan mampu bertahan dari hantaman badai.',
     price: 'D',
+    category: 'massive'
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ const coralsData = [
     image: '/corals/Turbinaria (Foliose Coral  Vase).png',
     desc: 'Membentuk struktur seperti lembaran terlipat atau vas raksasa. Sering ditemukan mendominasi di lereng terumbu yang lebih dalam dengan arus air yang moderate.',
     price: 'T',
+    category: 'foliose'
   },
   {
     id: 4,
@@ -38,6 +41,7 @@ const coralsData = [
     image: '/corals/Fungia (Mushroom Coral).png',
     desc: 'Karang soliter yang berbentuk seperti jamur atau cakram. Uniknya, sebagian besar spesies ini tidak melekat pada substrat dan dapat bergerak bebas secara pasif di dasar laut.',
     price: 'F',
+    category: 'foliose'
   },
   {
     id: 5,
@@ -46,6 +50,7 @@ const coralsData = [
     image: '/corals/Acropora Hyacinthus (Table Coral).png',
     desc: 'Tumbuh mendatar membentuk struktur seperti meja datar yang sangat lebar. Strategi ini sangat efektif untuk memaksimalkan penangkapan cahaya matahari di perairan dangkal yang jernih.',
     price: 'AH',
+    category: 'foliose'
   },
   {
     id: 6,
@@ -54,6 +59,7 @@ const coralsData = [
     image: '/corals/Seriatopora (Birdnest Coral).png',
     desc: 'Cabang-cabangnya tipis, halus, dan runcing menyerupai anyaman sarang burung. Spesies ini sangat indah namun sangat sensitif terhadap perubahan kualitas air dan suhu.',
     price: 'S',
+    category: 'branching'
   },
   {
     id: 7,
@@ -62,6 +68,7 @@ const coralsData = [
     image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.40 (1).png',
     desc: 'Memiliki struktur yang kuat dan membulat seperti kembang kol. Ini adalah karang pionir yang sangat tangguh dan sering menjadi kolonisator pertama di area terumbu yang rusak.',
     price: 'P',
+    category: 'branching'
   },
   {
     id: 8,
@@ -70,6 +77,7 @@ const coralsData = [
     image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (7).png',
     desc: 'Tumbuh berlapis-lapis membentuk piringan atau lembaran tipis yang saling menumpuk. Sering menutupi luasan area yang besar dan mampu hidup dalam kondisi cahaya rendah.',
     price: 'M',
+    category: 'foliose'
   },
   {
     id: 9,
@@ -78,6 +86,7 @@ const coralsData = [
     image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (8).png',
     desc: 'Polipnya memanjang seperti tentakel berdaging dengan ujung yang bercahaya. Memiliki "sweeper tentacles" penyengat mematikan yang digunakan secara agresif untuk mempertahankan ruang hidupnya.',
     price: 'E',
+    category: 'massive'
   },
   {
     id: 10,
@@ -86,12 +95,108 @@ const coralsData = [
     image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (9).png',
     desc: 'Membentuk bongkahan raksasa padat yang menyerupai batu besar. Tumbuh sangat lambat (hanya beberapa milimeter per tahun) dan beberapa koloni dapat hidup hingga ratusan tahun.',
     price: 'P',
+    category: 'massive'
+  },
+  {
+    id: 11,
+    name: 'Acanthastrea',
+    type: 'Star Coral',
+    image: '/corals/Acanthastrea — Star Coral.jpeg',
+    desc: 'Memiliki koralit berbentuk bintang yang sangat menonjol dengan warna-warni cerah yang sangat indah. Terkenal sebagai salah satu karang hias paling populer karena keanekaragaman pola warnanya.',
+    price: 'A',
+    category: 'massive'
+  },
+  {
+    id: 12,
+    name: 'Favites',
+    type: 'Closed Brain Coral',
+    image: '/corals/Favites - Closed Brain Coral.jpeg',
+    desc: 'Mirip dengan karang otak konvensional, namun dinding-dinding koralitnya menyatu secara rapat membentuk pola bersegi banyak (poligonal). Sangat toleran terhadap perairan dengan kekeruhan sedang.',
+    price: 'F',
+    category: 'massive'
+  },
+  {
+    id: 13,
+    name: 'Galaxea',
+    type: 'Galaxy Coral',
+    image: '/corals/Galaxea — Galaxy Coral.jpeg',
+    desc: 'Koralitnya tumbuh menjulang seperti pilar-pilar kecil tajam mirip bintang-bintang di galaksi. Memiliki tentakel penyengat yang panjang dan agresif di malam hari untuk berburu plankton.',
+    price: 'G',
+    category: 'massive'
+  },
+  {
+    id: 14,
+    name: 'Goniopora',
+    type: 'Flowerpot Coral',
+    image: '/corals/Geniopora - Flower Pot Corall.jpeg',
+    desc: 'Terkenal dengan polip panjang menjulur menyerupai sekumpulan bunga pot yang melambai-lambai mengikuti arus. Sangat sensitif terhadap sentuhan fisik dan stres lingkungan.',
+    price: 'GO',
+    category: 'massive'
+  },
+  {
+    id: 15,
+    name: 'Hydnophora',
+    type: 'Horn Coral',
+    image: '/corals/Hydnophora — Horn Coral.png',
+    desc: 'Permukaan karangnya dipenuhi struktur runcing unik mirip tanduk-tanduk kecil bernama montikula. Karang ini memiliki tingkat pertumbuhan yang solid di bawah arus deras.',
+    price: 'H',
+    category: 'branching'
+  } ,
+  {
+    id: 16,
+    name: 'Leptoseris',
+    type: 'Thin Plate Coral',
+    image: '/corals/Leptoseris — Thin Plate Coral.jpeg',
+    desc: 'Membentuk koloni lembaran tipis yang sangat berkerut dengan alur halus. Mampu beradaptasi dengan baik di kedalaman laut yang minim intensitas cahaya matahari.',
+    price: 'L',
+    category: 'foliose'
+  },
+  {
+    id: 17,
+    name: 'Merulina',
+    type: 'Lettuce Coral',
+    image: '/corals/Merulina — Lettuce Coral.jpeg',
+    desc: 'Memiliki struktur berlipat-lipat menyerupai daun selada atau kipas bergelombang. Alur-alur di permukaannya berfungsi mengarahkan nutrisi ke bagian polip.',
+    price: 'ME',
+    category: 'foliose'
+  },
+  {
+    id: 18,
+    name: 'Pavona',
+    type: 'Cactus Coral',
+    image: '/corals/Pavona — Cactus Coral.png',
+    desc: 'Tumbuh tegak berlembar-lembar menyerupai tanaman kaktus gurun di dasar laut. Memiliki tekstur halus di kedua sisi lembarannya yang dipenuhi lubang polip kecil.',
+    price: 'PV',
+    category: 'foliose'
+  },
+  {
+    id: 19,
+    name: 'Stylophora',
+    type: 'Cat\'s Paw Coral',
+    image: '/corals/Stylophora — Cat’s Paw Coral.png',
+    desc: 'Memiliki cabang tebal membulat di ujungnya yang menyerupai bentuk cakar kucing. Tumbuh berkelompok rapat dan menyukai wilayah dengan paparan sinar matahari penuh.',
+    price: 'ST',
+    category: 'branching'
+  },
+  {
+    id: 20,
+    name: 'Tubastraea',
+    type: 'Sun Coral',
+    image: '/corals/Tubastraea — Sun Coral.jpeg',
+    desc: 'Karang non-fotosintetik yang tidak memerlukan cahaya matahari. Polipnya berwarna kuning-oranye menyala mirip matahari, yang mengembang penuh di malam hari untuk menangkap plankton.',
+    price: 'TU',
+    category: 'massive'
   }
 ];
 
 const GalleryPage = ({ onBack }) => {
   const containerRef = useRef(null);
   const [selectedCoral, setSelectedCoral] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  const filteredCorals = activeCategory === 'all'
+    ? coralsData
+    : coralsData.filter(coral => coral.category === activeCategory);
 
   // Scroll to top and Lenis Smooth Scroll
   useEffect(() => {
@@ -240,15 +345,35 @@ const GalleryPage = ({ onBack }) => {
       {/* SECTION 2: LIST (Menu & Items) */}
       <section className="pt-48 pb-32 px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto flex flex-col md:flex-row gap-16 md:gap-24 relative z-20 bg-[#0a0a0a]">
         
-        {/* Sidebar (Static now, since right side scrolls) */}
+        {/* Sidebar */}
         <div className="w-full md:w-1/4 relative hidden md:block">
           <div className="flex flex-col gap-10">
             <h3 className="font-serif text-xl tracking-[0.3em] text-white/50 uppercase border-b border-white/10 pb-6">Bentuk Karang</h3>
             <div className="flex flex-col gap-5 text-xs tracking-[0.2em] text-gray-500 uppercase">
-              <span className="text-white border-l border-[var(--color-gold)] pl-4 py-1">Semua Spesies</span>
-              <span className="hover:text-white pl-4 py-1 transition-all cursor-pointer">Branching</span>
-              <span className="hover:text-white pl-4 py-1 transition-all cursor-pointer">Massive</span>
-              <span className="hover:text-white pl-4 py-1 transition-all cursor-pointer">Foliose</span>
+              <span 
+                onClick={() => setActiveCategory('all')}
+                className={`pl-4 py-1 transition-all cursor-pointer border-l-2 ${activeCategory === 'all' ? 'text-white border-[var(--color-gold)] font-bold' : 'hover:text-white border-transparent'}`}
+              >
+                Semua Spesies
+              </span>
+              <span 
+                onClick={() => setActiveCategory('branching')}
+                className={`pl-4 py-1 transition-all cursor-pointer border-l-2 ${activeCategory === 'branching' ? 'text-white border-[var(--color-gold)] font-bold' : 'hover:text-white border-transparent'}`}
+              >
+                Branching
+              </span>
+              <span 
+                onClick={() => setActiveCategory('massive')}
+                className={`pl-4 py-1 transition-all cursor-pointer border-l-2 ${activeCategory === 'massive' ? 'text-white border-[var(--color-gold)] font-bold' : 'hover:text-white border-transparent'}`}
+              >
+                Massive
+              </span>
+              <span 
+                onClick={() => setActiveCategory('foliose')}
+                className={`pl-4 py-1 transition-all cursor-pointer border-l-2 ${activeCategory === 'foliose' ? 'text-white border-[var(--color-gold)] font-bold' : 'hover:text-white border-transparent'}`}
+              >
+                Foliose
+              </span>
             </div>
           </div>
         </div>
@@ -262,7 +387,7 @@ const GalleryPage = ({ onBack }) => {
           {/* Header Line inside scrollable so it aligns with left sidebar */}
           <div className="border-t border-white/10 mb-8" />
           
-          {coralsData.map((coral) => (
+          {filteredCorals.map((coral) => (
             <div 
               key={coral.id} 
               className="list-item group flex items-start justify-between cursor-pointer border-b border-white/5 pb-12 mb-12 hover:border-white/20 transition-all duration-500"
