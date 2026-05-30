@@ -152,7 +152,7 @@ const Dashboard = ({ onBack }) => {
     formData.append('threshold', (threshold / 100).toString());
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/predict', {
+      const response = await fetch('https://mhmddfebry-coral-reef-ai-backend.hf.space/api/v1/predict', {
         method: 'POST',
         body: formData,
       });
