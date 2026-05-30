@@ -108,8 +108,8 @@ async def predict_coral_damage(
     try:
         image_bytes = await file.read()
         
-        # Background Removal menggunakan rembg
-        bg_removed_bytes = remove(image_bytes)
+        # Background Removal menggunakan rembg dengan alpha matting agar lebih tajam
+        bg_removed_bytes = remove(image_bytes, alpha_matting=True)
         
         # Ekstrak Alpha Channel untuk mendapatkan mask karang (foreground)
         bg_img = Image.open(io.BytesIO(bg_removed_bytes)).convert("RGBA")

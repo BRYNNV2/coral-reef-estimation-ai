@@ -73,6 +73,10 @@ const Dashboard = ({ onBack }) => {
   const [error, setError] = useState(null);
   const [threshold, setThreshold] = useState(50); // Sensitivitas (10-90)
   const [sessionHistory, setSessionHistory] = useState([]); // Riwayat Analisis Lokal
+  const [comparePosition, setComparePosition] = useState(50); // Before/After slider position
+  const [maskOpacity, setMaskOpacity] = useState(100); // Overlay mask opacity (0-100)
+  const [isDraggingSlider, setIsDraggingSlider] = useState(false);
+  const compareRef = useRef(null);
 
   const containerRef = useRef(null);
 
@@ -418,50 +422,101 @@ const Dashboard = ({ onBack }) => {
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 {/* Left Panel: Image Visualization */}
                 <div className="lg:col-span-3 glass-card rounded-2xl p-6 border border-gold-10 flex flex-col gap-5">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between print:hidden">
                   <h3 className="font-serif text-md text-[var(--color-gold)] uppercase tracking-wider font-medium">
                     Visualisasi Analisis
                   </h3>
-                  <div className="flex bg-black/40 rounded-full p-0.5 border border-white/5">
-                    <button
-                      onClick={() => setShowOriginal(false)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                        !showOriginal
-                          ? 'bg-[var(--color-gold)] text-[var(--color-ocean-950)] font-semibold'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Scan Overlay
-                    </button>
-                    <button
-                      onClick={() => setShowOriginal(true)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all cursor-pointer ${
-                        showOriginal
-                          ? 'bg-[var(--color-gold)] text-[var(--color-ocean-950)] font-semibold'
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Gambar Asli
-                    </button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] text-gray-500 uppercase tracking-wider">Asli</span>
+                    <div className="w-20 h-1 bg-white/10 rounded-full relative">
+                      <div className="absolute inset-y-0 left-0 bg-[var(--color-gold)] rounded-full" style={{ width: `${comparePosition}%` }} />
+                    </div>
+                    <span className="text-[9px] text-gray-500 uppercase tracking-wider">AI</span>
                   </div>
                 </div>
 
-                {/* Display Screen */}
-                <div className="relative rounded-xl overflow-hidden border border-white/5 bg-black shadow-2xl flex items-center justify-center h-[350px]">
+                {/* Before/After Comparison Slider */}
+                <div
+                  ref={compareRef}
+                  className="relative rounded-xl overflow-hidden border border-white/5 bg-black shadow-2xl h-[350px] cursor-col-resize select-none"
+                  onMouseDown={(e) => {
+                    setIsDraggingSlider(true);
+                    const rect = compareRef.current.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                    setComparePosition((x / rect.width) * 100);
+                  }}
+                  onMouseMove={(e) => {
+                    if (!isDraggingSlider) return;
+                    const rect = compareRef.current.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                    setComparePosition((x / rect.width) * 100);
+                  }}
+                  onMouseUp={() => setIsDraggingSlider(false)}
+                  onMouseLeave={() => setIsDraggingSlider(false)}
+                  onTouchStart={(e) => {
+                    setIsDraggingSlider(true);
+                    const rect = compareRef.current.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(e.touches[0].clientX - rect.left, rect.width));
+                    setComparePosition((x / rect.width) * 100);
+                  }}
+                  onTouchMove={(e) => {
+                    if (!isDraggingSlider) return;
+                    const rect = compareRef.current.getBoundingClientRect();
+                    const x = Math.max(0, Math.min(e.touches[0].clientX - rect.left, rect.width));
+                    setComparePosition((x / rect.width) * 100);
+                  }}
+                  onTouchEnd={() => setIsDraggingSlider(false)}
+                >
+                  {/* Layer: AI Overlay (background, full) */}
                   <img
-                    src={
-                      showOriginal
-                        ? imagePreview
-                        : `data:image/png;base64,${result.overlay_base64}`
-                    }
-                    alt="Coral Estimation View"
-                    className="w-full h-full object-cover transition-all duration-300"
+                    src={`data:image/png;base64,${result.overlay_base64}`}
+                    alt="AI Overlay"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ opacity: maskOpacity / 100 }}
+                    draggable={false}
                   />
-                  {!showOriginal && (
-                    <div className="absolute top-4 left-4 bg-red-600/90 text-white font-sans text-[10px] uppercase font-semibold tracking-wider px-3 py-1 rounded-full border border-red-500/30">
-                      Deteksi Kerusakan (Merah)
+
+                  {/* Layer: Original Image (foreground, clipped by slider) */}
+                  <div
+                    className="absolute inset-0 overflow-hidden"
+                    style={{ width: `${comparePosition}%` }}
+                  >
+                    <img
+                      src={imagePreview}
+                      alt="Original"
+                      className="w-full h-full object-cover"
+                      style={{ width: compareRef.current ? compareRef.current.offsetWidth : '100%', maxWidth: 'none' }}
+                      draggable={false}
+                    />
+                  </div>
+
+                  {/* Divider Line */}
+                  <div
+                    className="absolute top-0 bottom-0 z-10 pointer-events-none"
+                    style={{ left: `${comparePosition}%`, transform: 'translateX(-50%)' }}
+                  >
+                    <div className="w-0.5 h-full bg-white/80 shadow-lg shadow-black/50" />
+                    {/* Handle */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md shadow-xl flex items-center justify-center border-2 border-white">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="8 4 4 8 8 12" />
+                        <polyline points="16 4 20 8 16 12" />
+                      </svg>
                     </div>
-                  )}
+                  </div>
+
+                  {/* Labels */}
+                  <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white font-sans text-[10px] uppercase font-semibold tracking-wider px-3 py-1.5 rounded-full border border-white/20 z-10 pointer-events-none">
+                    Foto Asli
+                  </div>
+                  <div className="absolute top-4 right-4 flex flex-wrap gap-1.5 z-10 pointer-events-none">
+                    <div className="bg-red-600/90 text-white font-sans text-[10px] uppercase font-semibold tracking-wider px-3 py-1.5 rounded-full border border-red-500/30 shadow-md">
+                      Rusak
+                    </div>
+                    <div className="bg-emerald-600/90 text-white font-sans text-[10px] uppercase font-semibold tracking-wider px-3 py-1.5 rounded-full border border-emerald-500/30 shadow-md">
+                      Sehat
+                    </div>
+                  </div>
                 </div>
 
                 {/* Threshold Control Panel */}
@@ -499,6 +554,35 @@ const Dashboard = ({ onBack }) => {
                   >
                     TERAPKAN SENSITIVITAS
                   </button>
+                </div>
+
+                {/* Mask Opacity Control */}
+                <div className="glass-card rounded-xl p-5 border border-white/5 bg-black/20 mt-2 print:hidden">
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex items-center gap-2 cursor-help group relative">
+                      <label className="text-xs font-semibold text-[var(--color-gold)] uppercase tracking-wider">
+                        Transparansi Masker
+                      </label>
+                      <div className="w-4 h-4 rounded-full border border-gray-400 text-gray-400 flex items-center justify-center text-[9px]">?</div>
+                      <div className="absolute -top-10 left-0 w-52 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                        Atur kepekatan warna overlay AI untuk melihat tekstur asli karang.
+                      </div>
+                    </div>
+                    <span className="text-xs text-white bg-white/10 px-2 py-1 rounded font-mono">
+                      {maskOpacity}%
+                    </span>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="10" max="100" step="1" 
+                    value={maskOpacity} 
+                    onChange={(e) => setMaskOpacity(Number(e.target.value))}
+                    className="w-full accent-[var(--color-gold)] cursor-pointer h-1.5 bg-white/10 rounded-lg appearance-none"
+                  />
+                  <div className="flex justify-between text-[9px] text-gray-500 mt-2 font-medium uppercase tracking-wider">
+                    <span>Transparan (Lihat Tekstur)</span>
+                    <span>Solid (Warna Penuh)</span>
+                  </div>
                 </div>
               </div>
 
@@ -594,7 +678,7 @@ const Dashboard = ({ onBack }) => {
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">Akurasi (Global)</p>
-                    <p className="text-xs font-semibold text-white">96.84% (UNet)</p>
+                    <p className="text-xs font-semibold text-white">91.55% (UNet)</p>
                   </div>
                   {/* Tooltip */}
                   <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 text-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 pointer-events-none z-10">
@@ -609,7 +693,7 @@ const Dashboard = ({ onBack }) => {
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">Mean IoU (Global)</p>
-                    <p className="text-xs font-semibold text-white">88.92% (Val)</p>
+                    <p className="text-xs font-semibold text-white">86.95% (Val)</p>
                   </div>
                   {/* Tooltip */}
                   <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 text-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 pointer-events-none z-10">
@@ -624,7 +708,7 @@ const Dashboard = ({ onBack }) => {
                   </div>
                   <div>
                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">F1-Score (Global)</p>
-                    <p className="text-xs font-semibold text-white">93.07% (F1)</p>
+                    <p className="text-xs font-semibold text-white">93.02% (F1)</p>
                   </div>
                   {/* Tooltip */}
                   <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 p-2 bg-black/90 backdrop-blur-md border border-white/10 rounded-md text-[9px] text-gray-300 text-center opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 pointer-events-none z-10">
@@ -854,7 +938,7 @@ const Dashboard = ({ onBack }) => {
                 </div>
               </div>
 
-              <div className="p-5 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg text-sm">
+              <div className="p-5 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg text-sm mb-6">
                 <p className="font-bold text-blue-900 mb-2">Parameter Sistem & Model</p>
                 <ul className="list-disc ml-5 space-y-1 text-blue-800">
                   <li><strong>Arsitektur:</strong> U-Net (EfficientNet-B3 Backbone)</li>
@@ -863,6 +947,25 @@ const Dashboard = ({ onBack }) => {
                   <li><strong>Preprocessing:</strong> Rembg U²-Net (Background Removal)</li>
                   <li><strong>Resolusi Analisis:</strong> 256x256 px</li>
                 </ul>
+              </div>
+
+              {/* REKOMENDASI TINDAKAN OTOMATIS */}
+              <h2 className="text-lg font-bold mb-3 border-b border-gray-300 pb-1 uppercase tracking-wider text-gray-800">Rekomendasi Tindakan</h2>
+              <div className={`p-5 rounded-lg border-2 ${
+                result.damage_percentage > 50 ? 'bg-red-50 border-red-200 text-red-900' : 
+                result.damage_percentage > 20 ? 'bg-yellow-50 border-yellow-200 text-yellow-900' : 
+                'bg-emerald-50 border-emerald-200 text-emerald-900'
+              }`}>
+                <h3 className="font-bold mb-2">
+                  {result.damage_percentage > 50 ? '⚠️ STATUS KRITIS: KERUSAKAN PARAH (SEVERITY LEVEL 3)' : 
+                   result.damage_percentage > 20 ? '⚠️ STATUS WASPADA: KERUSAKAN SEDANG (SEVERITY LEVEL 2)' : 
+                   '✅ STATUS AMAN: EKOSISTEM SEHAT (SEVERITY LEVEL 1)'}
+                </h3>
+                <p className="text-sm">
+                  {result.damage_percentage > 50 ? 'Karang mengalami pemutihan/kematian masif. Diperlukan intervensi segera berupa penutupan area dari aktivitas pariwisata dan memulai program transplantasi karang darurat.' : 
+                   result.damage_percentage > 20 ? 'Karang menunjukkan gejala stres lingkungan menengah. Disarankan memantau kualitas air (suhu, polutan) secara intensif dan mengurangi stresor lokal.' : 
+                   'Terumbu karang dalam kondisi prima. Tetap lakukan pemantauan rutin dan pertahankan zona konservasi untuk menjaga ketahanan ekosistem.'}
+                </p>
               </div>
             </div>
           </div>

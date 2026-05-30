@@ -47,8 +47,9 @@ def create_overlay(
     mask: np.ndarray,
     alpha: float = 0.4,
     damage_color: Tuple[int, int, int] = (255, 50, 50),
+    healthy_color: Tuple[int, int, int] = (50, 220, 50),
 ) -> np.ndarray:
-    """Overlay binary mask pada gambar original (area rusak = merah)."""
+    """Overlay binary mask pada gambar original (area rusak = merah, area sehat = hijau)."""
     h, w = original_image.shape[:2]
     mask_resized = cv2.resize(
         mask.astype(np.float32), (w, h), interpolation=cv2.INTER_NEAREST
@@ -56,14 +57,33 @@ def create_overlay(
     overlay = original_image.copy()
     damage_mask = mask_resized > 0.5
     
-    # Adapt damage_color if original image is RGBA
-    if overlay.shape[-1] == 4 and len(damage_color) == 3:
-        damage_color = tuple(list(damage_color) + [255])
+    # Deteksi area karang keseluruhan dari alpha channel (jika RGBA)
+    if original_image.shape[-1] == 4:
+        coral_mask = original_image[..., 3] > 0
+    else:
+        coral_mask = np.ones((h, w), dtype=bool)
         
+    healthy_mask = coral_mask & ~damage_mask
+
+    # Adapt colors if original image is RGBA
+    if overlay.shape[-1] == 4:
+        if len(damage_color) == 3:
+            damage_color = tuple(list(damage_color) + [255])
+        if len(healthy_color) == 3:
+            healthy_color = tuple(list(healthy_color) + [255])
+        
+    # Warna Merah untuk area rusak
     overlay[damage_mask] = (
         (1 - alpha) * overlay[damage_mask]
         + alpha * np.array(damage_color, dtype=np.float32)
     ).astype(np.uint8)
+    
+    # Warna Hijau untuk area sehat
+    overlay[healthy_mask] = (
+        (1 - alpha) * overlay[healthy_mask]
+        + alpha * np.array(healthy_color, dtype=np.float32)
+    ).astype(np.uint8)
+    
     return overlay
 
 

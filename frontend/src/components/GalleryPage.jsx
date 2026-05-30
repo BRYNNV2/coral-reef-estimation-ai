@@ -201,12 +201,12 @@ const GalleryPage = ({ onBack }) => {
   // Scroll to top and Lenis Smooth Scroll
   useEffect(() => {
     // Prevent browser from restoring previous scroll position
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
     }
     
-    // Force immediate browser scroll to top
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Force immediate browser scroll to top BEFORE Lenis initializes
+    window.scrollTo(0, 0);
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -214,14 +214,11 @@ const GalleryPage = ({ onBack }) => {
       smoothWheel: true,
     });
     
-    // Force Lenis to top immediately
-    lenis.scrollTo(0, { immediate: true });
-
-    // Double check on next frame to ensure DOM is ready
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Double ensure scroll is at top after DOM paint
+    setTimeout(() => {
+      window.scrollTo(0, 0);
       lenis.scrollTo(0, { immediate: true });
-    });
+    }, 50);
     
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => lenis.raf(time * 1000));
