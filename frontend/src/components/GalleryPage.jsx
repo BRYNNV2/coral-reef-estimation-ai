@@ -313,12 +313,12 @@ const GalleryPage = ({ onBack }) => {
 
         {/* Left Parallax Image */}
         <div className="hero-img-left absolute left-4 md:left-24 top-1/4 w-[40vw] md:w-[25vw] opacity-40 md:opacity-60 z-0 grayscale-[20%] hover:grayscale-0 transition-all duration-700">
-          <img src="/corals/Diploria (Brain Coral  Massive).png" alt="Brain Coral" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
+          <img src="/corals/Diploria (Brain Coral  Massive).png" alt="Brain Coral" loading="lazy" decoding="async" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
         </div>
 
         {/* Right Parallax Image */}
         <div className="hero-img-right absolute right-4 md:right-24 top-[40%] w-[45vw] md:w-[28vw] opacity-40 md:opacity-60 z-0 grayscale-[20%] hover:grayscale-0 transition-all duration-700">
-          <img src="/corals/Acropora (Branching Coral).png" alt="Branching Coral" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
+          <img src="/corals/Acropora (Branching Coral).png" alt="Branching Coral" loading="lazy" decoding="async" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
         </div>
 
         {/* Center Text */}
@@ -394,7 +394,7 @@ const GalleryPage = ({ onBack }) => {
               <div className="flex flex-col sm:flex-row gap-8 sm:gap-10 items-start w-full pr-4">
                 {/* Thumbnail */}
                 <div className="w-full sm:w-32 h-48 sm:h-32 rounded-lg overflow-hidden flex-shrink-0 bg-white/5 border border-white/5 group-hover:border-[var(--color-gold)]/40 transition-colors duration-500 relative">
-                  <img src={coral.image} alt={coral.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={coral.image} alt={coral.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
                 {/* Text */}
@@ -433,7 +433,7 @@ const GalleryPage = ({ onBack }) => {
 
             {/* Left: Large Image */}
             <div className="w-full md:w-1/2 h-64 md:h-auto bg-black relative overflow-hidden group">
-              <img src={selectedCoral.image} alt={selectedCoral.name} className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-[2s] ease-out" />
+              <img src={selectedCoral.image} alt={selectedCoral.name} loading="lazy" decoding="async" className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-[2s] ease-out" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-[#0a0a0a]" />
               {/* Subtle Gold Vignette */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--color-gold)_200%)] opacity-20 mix-blend-color" />
