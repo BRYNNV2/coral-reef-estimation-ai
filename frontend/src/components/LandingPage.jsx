@@ -227,7 +227,7 @@ const HeroSection = ({ onStartDetection }) => {
           poster="/hero-bg.png"
           className="w-full h-full object-cover"
         >
-          <source src="/Section 1 Terumbu karang.mp4" type="video/mp4" />
+          <source src="/hero-bg.mp4" type="video/mp4" />
         </video>
         {/* Dark overlay gradient */}
         <div className="absolute inset-0 hero-overlay-b" />
