@@ -283,19 +283,19 @@ const HeroSection = ({ onStartDetection }) => {
    GALLERY SECTION — Infinite Marquee of Corals
    ═══════════════════════════════════════════════════════════ */
 const row1Images = [
-  "Acropora (Branching Coral).png",
-  "Acropora Hyacinthus (Table Coral).png",
-  "ChatGPT Image 23 Mei 2026, 21.37.40 (1).png",
-  "ChatGPT Image 23 Mei 2026, 21.37.43 (7).png",
-  "ChatGPT Image 23 Mei 2026, 21.37.43 (8).png"
+  "Acropora (Branching Coral).webp",
+  "Acropora Hyacinthus (Table Coral).webp",
+  "ChatGPT Image 23 Mei 2026, 21.37.40 (1).webp",
+  "ChatGPT Image 23 Mei 2026, 21.37.43 (7).webp",
+  "ChatGPT Image 23 Mei 2026, 21.37.43 (8).webp"
 ];
 
 const row2Images = [
-  "ChatGPT Image 23 Mei 2026, 21.37.43 (9).png",
-  "Diploria (Brain Coral  Massive).png",
-  "Fungia (Mushroom Coral).png",
-  "Seriatopora (Birdnest Coral).png",
-  "Turbinaria (Foliose Coral  Vase).png"
+  "ChatGPT Image 23 Mei 2026, 21.37.43 (9).webp",
+  "Diploria (Brain Coral  Massive).webp",
+  "Fungia (Mushroom Coral).webp",
+  "Seriatopora (Birdnest Coral).webp",
+  "Turbinaria (Foliose Coral  Vase).webp"
 ];
 
 const GallerySection = ({ onExploreGallery }) => {
