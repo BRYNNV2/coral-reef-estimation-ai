@@ -370,7 +370,7 @@ const initialDiseaseCards = [
     title: "Coral Bleaching",
     type: "Kritis",
     species: "Stres Lingkungan",
-    image: "/corals/Diploria (Brain Coral  Massive).png",
+    image: "/corals/Diploria (Brain Coral  Massive).webp",
     symptoms: "Karang berubah putih/pucat karena kehilangan zooxanthellae. Ini bukan penyakit infeksi, tapi stres akibat suhu tinggi, polusi, atau cahaya berlebih.",
     impact: "Karang kehilangan sumber nutrisi utamanya, rentan mati kelaparan, dan sangat rawan terhadap penyakit infeksi sekunder."
   },
@@ -379,7 +379,7 @@ const initialDiseaseCards = [
     title: "Black Band Disease",
     type: "Infeksi",
     species: "Pita Hitam",
-    image: "/corals/Acropora (Branching Coral).png",
+    image: "/corals/Acropora (Branching Coral).webp",
     symptoms: "Ada pita/lapisan hitam yang bergerak di permukaan karang, jaringan karang mati di belakangnya.",
     impact: "Menghancurkan jaringan karang dengan cepat. Wabah ini sangat agresif dan sering memburuk saat perairan menghangat."
   },
@@ -388,7 +388,7 @@ const initialDiseaseCards = [
     title: "White Band Disease",
     type: "Infeksi",
     species: "Pita Putih",
-    image: "/corals/Acropora Hyacinthus (Table Coral).png",
+    image: "/corals/Acropora Hyacinthus (Table Coral).webp",
     symptoms: "Muncul garis/pita putih pada karang bercabang, jaringan karang mengelupas dan menyisakan rangka putih.",
     impact: "Menyebabkan kematian jaringan yang luas, khususnya merusak struktur habitat karang bercabang."
   }
@@ -697,7 +697,7 @@ const DatasetSection = () => {
           {/* Middle: Image */}
           <div className="flex-1 w-full flex justify-center relative z-10">
             <div ref={imageRef} className="relative w-full max-w-[320px] rounded-[2rem] overflow-hidden border border-gold-20 shadow-2xl shadow-black/80" style={{ aspectRatio: '3/4' }}>
-              <img src="/corals/Acropora Hyacinthus (Table Coral).png" alt="Dataset Sample" className="w-full h-full object-cover scale-110" />
+              <img src="/corals/Acropora Hyacinthus (Table Coral).webp" alt="Dataset Sample" className="w-full h-full object-cover scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#040d12]/90 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-0 right-0 text-center">
                 <span className="text-[10px] uppercase tracking-[0.2em] text-white/90 font-bold bg-white/10 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">

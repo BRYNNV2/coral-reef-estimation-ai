@@ -11,7 +11,7 @@ const coralsData = [
     id: 1,
     name: 'Acropora',
     type: 'Branching Coral',
-    image: '/corals/Acropora (Branching Coral).png',
+    image: '/corals/Acropora (Branching Coral).webp',
     desc: 'Bentuk karang bercabang yang menjadi habitat utama banyak ikan kecil. Tumbuh sangat cepat namun sangat rentan terhadap perubahan suhu laut dan pemutihan karang (bleaching).',
     price: 'A',
     category: 'branching'
@@ -20,7 +20,7 @@ const coralsData = [
     id: 2,
     name: 'Diploria',
     type: 'Brain Coral / Massive',
-    image: '/corals/Diploria (Brain Coral  Massive).png',
+    image: '/corals/Diploria (Brain Coral  Massive).webp',
     desc: 'Bentuknya menyerupai otak manusia dengan alur-alur yang kompleks. Tumbuh sangat lambat, namun strukturnya yang padat membuatnya sangat kuat dan mampu bertahan dari hantaman badai.',
     price: 'D',
     category: 'massive'
@@ -29,7 +29,7 @@ const coralsData = [
     id: 3,
     name: 'Turbinaria',
     type: 'Foliose Coral / Vase',
-    image: '/corals/Turbinaria (Foliose Coral  Vase).png',
+    image: '/corals/Turbinaria (Foliose Coral  Vase).webp',
     desc: 'Membentuk struktur seperti lembaran terlipat atau vas raksasa. Sering ditemukan mendominasi di lereng terumbu yang lebih dalam dengan arus air yang moderate.',
     price: 'T',
     category: 'foliose'
@@ -38,7 +38,7 @@ const coralsData = [
     id: 4,
     name: 'Fungia',
     type: 'Mushroom Coral',
-    image: '/corals/Fungia (Mushroom Coral).png',
+    image: '/corals/Fungia (Mushroom Coral).webp',
     desc: 'Karang soliter yang berbentuk seperti jamur atau cakram. Uniknya, sebagian besar spesies ini tidak melekat pada substrat dan dapat bergerak bebas secara pasif di dasar laut.',
     price: 'F',
     category: 'foliose'
@@ -47,7 +47,7 @@ const coralsData = [
     id: 5,
     name: 'Acropora Hyacinthus',
     type: 'Table Coral',
-    image: '/corals/Acropora Hyacinthus (Table Coral).png',
+    image: '/corals/Acropora Hyacinthus (Table Coral).webp',
     desc: 'Tumbuh mendatar membentuk struktur seperti meja datar yang sangat lebar. Strategi ini sangat efektif untuk memaksimalkan penangkapan cahaya matahari di perairan dangkal yang jernih.',
     price: 'AH',
     category: 'foliose'
@@ -56,7 +56,7 @@ const coralsData = [
     id: 6,
     name: 'Seriatopora',
     type: 'Birdnest Coral',
-    image: '/corals/Seriatopora (Birdnest Coral).png',
+    image: '/corals/Seriatopora (Birdnest Coral).webp',
     desc: 'Cabang-cabangnya tipis, halus, dan runcing menyerupai anyaman sarang burung. Spesies ini sangat indah namun sangat sensitif terhadap perubahan kualitas air dan suhu.',
     price: 'S',
     category: 'branching'
@@ -65,7 +65,7 @@ const coralsData = [
     id: 7,
     name: 'Pocillopora',
     type: 'Cauliflower Coral',
-    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.40 (1).png',
+    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.40 (1).webp',
     desc: 'Memiliki struktur yang kuat dan membulat seperti kembang kol. Ini adalah karang pionir yang sangat tangguh dan sering menjadi kolonisator pertama di area terumbu yang rusak.',
     price: 'P',
     category: 'branching'
@@ -74,7 +74,7 @@ const coralsData = [
     id: 8,
     name: 'Montipora',
     type: 'Plating Coral',
-    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (7).png',
+    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (7).webp',
     desc: 'Tumbuh berlapis-lapis membentuk piringan atau lembaran tipis yang saling menumpuk. Sering menutupi luasan area yang besar dan mampu hidup dalam kondisi cahaya rendah.',
     price: 'M',
     category: 'foliose'
@@ -83,7 +83,7 @@ const coralsData = [
     id: 9,
     name: 'Euphyllia',
     type: 'Torch / Hammer Coral',
-    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (8).png',
+    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (8).webp',
     desc: 'Polipnya memanjang seperti tentakel berdaging dengan ujung yang bercahaya. Memiliki "sweeper tentacles" penyengat mematikan yang digunakan secara agresif untuk mempertahankan ruang hidupnya.',
     price: 'E',
     category: 'massive'
@@ -92,7 +92,7 @@ const coralsData = [
     id: 10,
     name: 'Porites',
     type: 'Boulder / Massive',
-    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (9).png',
+    image: '/corals/ChatGPT Image 23 Mei 2026, 21.37.43 (9).webp',
     desc: 'Membentuk bongkahan raksasa padat yang menyerupai batu besar. Tumbuh sangat lambat (hanya beberapa milimeter per tahun) dan beberapa koloni dapat hidup hingga ratusan tahun.',
     price: 'P',
     category: 'massive'
@@ -101,7 +101,7 @@ const coralsData = [
     id: 11,
     name: 'Acanthastrea',
     type: 'Star Coral',
-    image: '/corals/Acanthastrea — Star Coral.jpeg',
+    image: '/corals/Acanthastrea — Star Coral.webp',
     desc: 'Memiliki koralit berbentuk bintang yang sangat menonjol dengan warna-warni cerah yang sangat indah. Terkenal sebagai salah satu karang hias paling populer karena keanekaragaman pola warnanya.',
     price: 'A',
     category: 'massive'
@@ -110,7 +110,7 @@ const coralsData = [
     id: 12,
     name: 'Favites',
     type: 'Closed Brain Coral',
-    image: '/corals/Favites - Closed Brain Coral.jpeg',
+    image: '/corals/Favites - Closed Brain Coral.webp',
     desc: 'Mirip dengan karang otak konvensional, namun dinding-dinding koralitnya menyatu secara rapat membentuk pola bersegi banyak (poligonal). Sangat toleran terhadap perairan dengan kekeruhan sedang.',
     price: 'F',
     category: 'massive'
@@ -119,7 +119,7 @@ const coralsData = [
     id: 13,
     name: 'Galaxea',
     type: 'Galaxy Coral',
-    image: '/corals/Galaxea — Galaxy Coral.jpeg',
+    image: '/corals/Galaxea — Galaxy Coral.webp',
     desc: 'Koralitnya tumbuh menjulang seperti pilar-pilar kecil tajam mirip bintang-bintang di galaksi. Memiliki tentakel penyengat yang panjang dan agresif di malam hari untuk berburu plankton.',
     price: 'G',
     category: 'massive'
@@ -128,7 +128,7 @@ const coralsData = [
     id: 14,
     name: 'Goniopora',
     type: 'Flowerpot Coral',
-    image: '/corals/Geniopora - Flower Pot Corall.jpeg',
+    image: '/corals/Geniopora - Flower Pot Corall.webp',
     desc: 'Terkenal dengan polip panjang menjulur menyerupai sekumpulan bunga pot yang melambai-lambai mengikuti arus. Sangat sensitif terhadap sentuhan fisik dan stres lingkungan.',
     price: 'GO',
     category: 'massive'
@@ -137,7 +137,7 @@ const coralsData = [
     id: 15,
     name: 'Hydnophora',
     type: 'Horn Coral',
-    image: '/corals/Hydnophora — Horn Coral.png',
+    image: '/corals/Hydnophora — Horn Coral.webp',
     desc: 'Permukaan karangnya dipenuhi struktur runcing unik mirip tanduk-tanduk kecil bernama montikula. Karang ini memiliki tingkat pertumbuhan yang solid di bawah arus deras.',
     price: 'H',
     category: 'branching'
@@ -146,7 +146,7 @@ const coralsData = [
     id: 16,
     name: 'Leptoseris',
     type: 'Thin Plate Coral',
-    image: '/corals/Leptoseris — Thin Plate Coral.jpeg',
+    image: '/corals/Leptoseris — Thin Plate Coral.webp',
     desc: 'Membentuk koloni lembaran tipis yang sangat berkerut dengan alur halus. Mampu beradaptasi dengan baik di kedalaman laut yang minim intensitas cahaya matahari.',
     price: 'L',
     category: 'foliose'
@@ -155,7 +155,7 @@ const coralsData = [
     id: 17,
     name: 'Merulina',
     type: 'Lettuce Coral',
-    image: '/corals/Merulina — Lettuce Coral.jpeg',
+    image: '/corals/Merulina — Lettuce Coral.webp',
     desc: 'Memiliki struktur berlipat-lipat menyerupai daun selada atau kipas bergelombang. Alur-alur di permukaannya berfungsi mengarahkan nutrisi ke bagian polip.',
     price: 'ME',
     category: 'foliose'
@@ -164,7 +164,7 @@ const coralsData = [
     id: 18,
     name: 'Pavona',
     type: 'Cactus Coral',
-    image: '/corals/Pavona — Cactus Coral.png',
+    image: '/corals/Pavona — Cactus Coral.webp',
     desc: 'Tumbuh tegak berlembar-lembar menyerupai tanaman kaktus gurun di dasar laut. Memiliki tekstur halus di kedua sisi lembarannya yang dipenuhi lubang polip kecil.',
     price: 'PV',
     category: 'foliose'
@@ -173,7 +173,7 @@ const coralsData = [
     id: 19,
     name: 'Stylophora',
     type: 'Cat\'s Paw Coral',
-    image: '/corals/Stylophora — Cat’s Paw Coral.png',
+    image: '/corals/Stylophora — Cat’s Paw Coral.webp',
     desc: 'Memiliki cabang tebal membulat di ujungnya yang menyerupai bentuk cakar kucing. Tumbuh berkelompok rapat dan menyukai wilayah dengan paparan sinar matahari penuh.',
     price: 'ST',
     category: 'branching'
@@ -182,7 +182,7 @@ const coralsData = [
     id: 20,
     name: 'Tubastraea',
     type: 'Sun Coral',
-    image: '/corals/Tubastraea — Sun Coral.jpeg',
+    image: '/corals/Tubastraea — Sun Coral.webp',
     desc: 'Karang non-fotosintetik yang tidak memerlukan cahaya matahari. Polipnya berwarna kuning-oranye menyala mirip matahari, yang mengembang penuh di malam hari untuk menangkap plankton.',
     price: 'TU',
     category: 'massive'
@@ -313,12 +313,12 @@ const GalleryPage = ({ onBack }) => {
 
         {/* Left Parallax Image */}
         <div className="hero-img-left absolute left-4 md:left-24 top-1/4 w-[40vw] md:w-[25vw] opacity-40 md:opacity-60 z-0 grayscale-[20%] hover:grayscale-0 transition-all duration-700">
-          <img src="/corals/Diploria (Brain Coral  Massive).png" alt="Brain Coral" loading="lazy" decoding="async" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
+          <img src="/corals/Diploria (Brain Coral  Massive).webp" alt="Brain Coral" loading="lazy" decoding="async" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
         </div>
 
         {/* Right Parallax Image */}
         <div className="hero-img-right absolute right-4 md:right-24 top-[40%] w-[45vw] md:w-[28vw] opacity-40 md:opacity-60 z-0 grayscale-[20%] hover:grayscale-0 transition-all duration-700">
-          <img src="/corals/Acropora (Branching Coral).png" alt="Branching Coral" loading="lazy" decoding="async" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
+          <img src="/corals/Acropora (Branching Coral).webp" alt="Branching Coral" loading="lazy" decoding="async" className="w-full h-auto object-cover rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]" />
         </div>
 
         {/* Center Text */}
