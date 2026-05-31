@@ -80,7 +80,7 @@ const Navbar = ({ onExploreGallery }) => {
         </div>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm tracking-wider text-white">
+        <div className="hidden md:flex items-center gap-8 text-sm tracking-wider text-[var(--color-gold)] opacity-80">
           <a href="#about" className="hover:text-[var(--color-gold)] transition-colors duration-300">
             Tentang
           </a>
@@ -113,9 +113,9 @@ const Navbar = ({ onExploreGallery }) => {
           >
             <X size={32} />
           </button>
-          <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest hover:text-[var(--color-gold)] transition-colors">Tentang</a>
-          <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest hover:text-[var(--color-gold)] transition-colors">Fitur</a>
-          <a href="#detection" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest hover:text-[var(--color-gold)] transition-colors">Deteksi</a>
+          <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors">Tentang</a>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors">Fitur</a>
+          <a href="#detection" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors">Deteksi</a>
           <button
             onClick={() => { setMobileMenuOpen(false); onExploreGallery(); }}
             className="text-2xl font-serif tracking-widest text-[var(--color-gold)] uppercase mt-4 border border-gold-20 px-8 py-3 rounded-full bg-gold-5"
@@ -488,9 +488,9 @@ const AboutSection = () => {
         </div>
 
         {/* Right Side: Image Cards Stack */}
-        <div className="flex-1 w-full flex justify-center md:justify-end relative mt-12 md:mt-0">
+        <div className="flex-1 w-full flex justify-center md:justify-end relative mt-8 md:mt-0">
 
-          <div ref={cardRef} className="relative w-full max-w-[400px] group" style={{ aspectRatio: '4/5' }}>
+          <div ref={cardRef} className="relative w-full max-w-[280px] md:max-w-[400px] group" style={{ aspectRatio: '4/5' }}>
 
             {cards.slice().reverse().map((card, idxReversed) => {
               const originalIndex = (cards.length - 1) - idxReversed; // 0 for front, 1 for middle, 2 for back
@@ -501,29 +501,29 @@ const AboutSection = () => {
                 stylingClass = "opacity-0 pointer-events-none transform -rotate-[10deg] -translate-x-12 scale-[0.80] z-0";
               } else if (originalIndex === 2) {
                 // Back card
-                stylingClass = "transform -rotate-[10deg] -translate-x-12 scale-[0.85] z-10 opacity-60 group-hover:-translate-x-44 group-hover:-rotate-[15deg] group-hover:scale-95 group-hover:opacity-100 group-hover:z-30 transition-all duration-700 ease-out cursor-pointer";
+                stylingClass = "transform -rotate-[10deg] -translate-x-8 md:-translate-x-12 scale-[0.85] z-10 opacity-60 md:group-hover:-translate-x-44 md:group-hover:-rotate-[15deg] md:group-hover:scale-95 md:group-hover:opacity-100 md:group-hover:z-30 transition-all duration-700 ease-out cursor-pointer";
               } else if (originalIndex === 1) {
                 // Middle card
-                stylingClass = "transform -rotate-[3deg] -translate-x-6 scale-90 z-20 opacity-80 group-hover:-translate-x-20 group-hover:-rotate-[5deg] group-hover:scale-100 group-hover:opacity-100 group-hover:z-40 transition-all duration-700 ease-out cursor-pointer";
+                stylingClass = "transform -rotate-[3deg] -translate-x-4 md:-translate-x-6 scale-90 z-20 opacity-80 md:group-hover:-translate-x-20 md:group-hover:-rotate-[5deg] md:group-hover:scale-100 md:group-hover:opacity-100 md:group-hover:z-40 transition-all duration-700 ease-out cursor-pointer";
               } else {
                 // Front card
-                stylingClass = "transform rotate-4 z-30 group-hover:rotate-0 group-hover:scale-105 group-hover:z-50 transition-all duration-700 ease-out cursor-pointer bg-[#040d12]";
+                stylingClass = "transform rotate-4 z-30 md:group-hover:rotate-0 md:group-hover:scale-105 md:group-hover:z-50 transition-all duration-700 ease-out cursor-pointer bg-[#040d12]";
               }
 
               return (
                 <div
                   key={card.id}
                   onClick={() => handleCardClick(card.id)}
-                  className={`absolute inset-0 rounded-[2.5rem] overflow-hidden border-2 border-gold-20 shadow-2xl shadow-black/60 ${stylingClass}`}
+                  className={`absolute inset-0 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border-2 border-gold-20 shadow-2xl shadow-black/60 ${stylingClass}`}
                 >
                   <img src={card.image} alt={card.title} className={`w-full h-full object-cover ${originalIndex === 0 ? 'scale-110' : ''}`} />
 
                   {/* Overlay Layer */}
-                  <div className={`absolute inset-0 transition-colors duration-700 ${originalIndex === 0 ? 'bg-gradient-to-t from-[#040d12] via-transparent to-transparent opacity-90' : originalIndex === 1 ? 'bg-black/30 group-hover:bg-transparent mix-blend-multiply' : 'bg-black/50 group-hover:bg-black/10 mix-blend-multiply'}`} />
+                  <div className={`absolute inset-0 transition-colors duration-700 ${originalIndex === 0 ? 'bg-gradient-to-t from-[#040d12] via-transparent to-transparent opacity-90' : originalIndex === 1 ? 'bg-black/30 md:group-hover:bg-transparent mix-blend-multiply' : 'bg-black/50 md:group-hover:bg-black/10 mix-blend-multiply'}`} />
 
                   {/* Card Content (Only visible on front card) */}
-                  <div className={`absolute bottom-10 left-8 right-8 transition-opacity duration-300 ${originalIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
-                    <h3 className="font-serif text-3xl text-white mb-2 uppercase tracking-wide">{card.title}</h3>
+                  <div className={`absolute bottom-6 left-5 right-5 md:bottom-10 md:left-8 md:right-8 transition-opacity duration-300 ${originalIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
+                    <h3 className="font-serif text-xl md:text-3xl text-white mb-2 uppercase tracking-wide">{card.title}</h3>
                     <div className="flex items-center gap-3">
                       <span className="bg-white text-black font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-widest">{card.type}</span>
                       <span className="text-[var(--color-gold)] font-sans text-[10px] tracking-widest uppercase">{card.species}</span>
@@ -535,11 +535,42 @@ const AboutSection = () => {
 
           </div>
 
+          {/* Mobile Navigation Arrows */}
+          <div className="flex md:hidden gap-4 absolute -bottom-14 left-1/2 -translate-x-1/2 z-40">
+            <button
+              onClick={() => {
+                setCards(prev => {
+                  const newCards = [...prev];
+                  const last = newCards.pop();
+                  newCards.unshift(last);
+                  return newCards;
+                });
+              }}
+              className="w-10 h-10 rounded-full border border-[var(--color-gold)]/40 bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--color-gold)] hover:bg-[var(--color-gold)] hover:text-black transition-all duration-300"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button
+              onClick={() => {
+                setCards(prev => {
+                  const newCards = [...prev];
+                  const first = newCards.shift();
+                  newCards.push(first);
+                  return newCards;
+                });
+              }}
+              className="w-10 h-10 rounded-full border border-[var(--color-gold)]/40 bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--color-gold)] hover:bg-[var(--color-gold)] hover:text-black transition-all duration-300"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
           {/* Decorative background glow behind the card */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[var(--color-gold)] opacity-[0.03] blur-[100px] rounded-full pointer-events-none z-0" />
 
-          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[9px] text-[var(--color-gold)] tracking-widest uppercase opacity-70 animate-pulse text-center w-full">
-            Klik kartu terdepan untuk melihat detail penyakit
+          <div className="absolute -bottom-8 md:-bottom-8 -bottom-24 left-1/2 -translate-x-1/2 text-[9px] text-[var(--color-gold)] tracking-widest uppercase opacity-70 animate-pulse text-center w-full">
+            <span className="hidden md:inline">Klik kartu terdepan untuk melihat detail penyakit</span>
+            <span className="md:hidden">Geser dengan tombol panah, lalu klik untuk detail</span>
           </div>
         </div>
       </div>

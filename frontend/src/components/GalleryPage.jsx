@@ -298,7 +298,7 @@ const GalleryPage = ({ onBack }) => {
             CoralLens
           </span>
         </div>
-        <div className="flex gap-8 text-sm tracking-wider uppercase text-white">
+        <div className="flex gap-8 text-sm tracking-wider uppercase text-[var(--color-gold)] opacity-80">
           <button onClick={onBack} className="hover:text-[var(--color-gold)] transition-colors duration-300">
             Beranda
           </button>
@@ -340,9 +340,9 @@ const GalleryPage = ({ onBack }) => {
       </section>
 
       {/* SECTION 2: LIST (Menu & Items) */}
-      <section className="pt-48 pb-32 px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto flex flex-col md:flex-row gap-16 md:gap-24 relative z-20 bg-[#0a0a0a]">
+      <section className="pt-32 md:pt-48 pb-32 px-6 md:px-12 lg:px-24 max-w-[1400px] mx-auto flex flex-col md:flex-row gap-8 md:gap-24 relative z-20 bg-[#0a0a0a]">
         
-        {/* Sidebar */}
+        {/* Desktop Sidebar */}
         <div className="w-full md:w-1/4 relative hidden md:block">
           <div className="flex flex-col gap-10">
             <h3 className="font-serif text-xl tracking-[0.3em] text-white/50 uppercase border-b border-white/10 pb-6">Bentuk Karang</h3>
@@ -375,9 +375,34 @@ const GalleryPage = ({ onBack }) => {
           </div>
         </div>
 
+        {/* Mobile Filter Bar */}
+        <div className="md:hidden w-full">
+          <h3 className="font-serif text-sm tracking-[0.3em] text-white/50 uppercase mb-4">Bentuk Karang</h3>
+          <div className="flex gap-2 overflow-x-auto pb-3 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+            {[
+              { key: 'all', label: 'Semua' },
+              { key: 'branching', label: 'Branching' },
+              { key: 'massive', label: 'Massive' },
+              { key: 'foliose', label: 'Foliose' },
+            ].map(cat => (
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+                className={`whitespace-nowrap px-4 py-2 rounded-full text-[10px] tracking-[0.15em] uppercase font-semibold border transition-all duration-300 flex-shrink-0 ${
+                  activeCategory === cat.key
+                    ? 'bg-[var(--color-gold)] text-black border-[var(--color-gold)]'
+                    : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* List Content (Scrollable Container) */}
         <div 
-          className="w-full md:w-3/4 flex flex-col h-[75vh] overflow-y-auto scrollable-list pr-4" 
+          className="w-full md:w-3/4 flex flex-col h-[75vh] overflow-y-auto scrollable-list pr-2 md:pr-4" 
           data-lenis-prevent="true"
           style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(201,169,110,0.3) transparent' }}
         >
