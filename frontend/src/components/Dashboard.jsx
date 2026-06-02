@@ -153,6 +153,7 @@ const Dashboard = ({ onBack }) => {
     formData.append('threshold', (threshold / 100).toString());
 
     try {
+      // API call ke Hugging Face backend
       const response = await fetch('https://mhmddfebry-coral-reef-ai-backend.hf.space/api/v1/predict', {
         method: 'POST',
         body: formData,

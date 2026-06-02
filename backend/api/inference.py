@@ -24,6 +24,7 @@ from utils.preprocessing import (
     mask_to_base64,
     overlay_to_base64,
 )
+from utils.clip_classifier import is_coral_image
 
 router = APIRouter(prefix="/api/v1", tags=["inference"])
 
@@ -104,9 +105,17 @@ async def predict_coral_damage(
             }
         )
 
-    # ── 2. Baca & Background Removal & Preprocessing ──
+    # ── 2. Baca & Cek CLIP & Background Removal & Preprocessing ──
     try:
         image_bytes = await file.read()
+        
+        # Cek Zero-Shot Classification menggunakan CLIP
+        raw_pil = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        if not is_coral_image(raw_pil):
+            raise HTTPException(
+                status_code=400,
+                detail={"success": False, "message": "Gambar ditolak. Sistem mendeteksi gambar ini bukan terumbu karang (bisa berupa manusia, benda, atau lanskap lain)."}
+            )
         
         # Background Removal menggunakan rembg dengan alpha matting agar lebih tajam
         bg_removed_bytes = remove(image_bytes, alpha_matting=True)
@@ -128,6 +137,9 @@ async def predict_coral_damage(
         tensor, original_image = preprocess_image(
             bg_removed_bytes, img_size=IMG_SIZE, mean=MEAN, std=STD
         )
+    except HTTPException:
+        # Re-raise HTTPException agar pesan aslinya (dari CLIP) tidak tertimpa
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=400,
