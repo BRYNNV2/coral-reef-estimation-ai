@@ -406,8 +406,49 @@ const initialDiseaseCards = [
 const AboutSection = () => {
   const [cards, setCards] = useState(initialDiseaseCards);
   const [activeDisease, setActiveDisease] = useState(null);
+  
+  // Touch swipe state
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
   const sectionRef = useRef(null);
   const cardRef = useRef(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null); // Reset touch end
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Geser ke kiri (Next)
+      setCards(prev => {
+        const newCards = [...prev];
+        const first = newCards.shift();
+        newCards.push(first);
+        return newCards;
+      });
+    } else if (isRightSwipe) {
+      // Geser ke kanan (Prev)
+      setCards(prev => {
+        const newCards = [...prev];
+        const last = newCards.pop();
+        newCards.unshift(last);
+        return newCards;
+      });
+    }
+  };
 
   const handleCardClick = (clickedId) => {
     setCards(prevCards => {
@@ -499,7 +540,14 @@ const AboutSection = () => {
         {/* Right Side: Image Cards Stack */}
         <div className="flex-1 w-full flex justify-center md:justify-end relative mt-8 md:mt-0">
 
-          <div ref={cardRef} className="relative w-full max-w-[280px] md:max-w-[400px] group" style={{ aspectRatio: '4/5' }}>
+          <div 
+            ref={cardRef} 
+            className="relative w-full max-w-[280px] md:max-w-[400px] group touch-pan-y" 
+            style={{ aspectRatio: '4/5' }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
 
             {cards.slice().reverse().map((card, idxReversed) => {
               const originalIndex = (cards.length - 1) - idxReversed; // 0 for front, 1 for middle, 2 for back
@@ -544,42 +592,12 @@ const AboutSection = () => {
 
           </div>
 
-          {/* Mobile Navigation Arrows */}
-          <div className="flex md:hidden gap-4 absolute -bottom-14 left-1/2 -translate-x-1/2 z-40">
-            <button
-              onClick={() => {
-                setCards(prev => {
-                  const newCards = [...prev];
-                  const last = newCards.pop();
-                  newCards.unshift(last);
-                  return newCards;
-                });
-              }}
-              className="w-10 h-10 rounded-full border border-[var(--color-gold)]/40 bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--color-gold)] hover:bg-[var(--color-gold)] hover:text-black transition-all duration-300"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-            <button
-              onClick={() => {
-                setCards(prev => {
-                  const newCards = [...prev];
-                  const first = newCards.shift();
-                  newCards.push(first);
-                  return newCards;
-                });
-              }}
-              className="w-10 h-10 rounded-full border border-[var(--color-gold)]/40 bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--color-gold)] hover:bg-[var(--color-gold)] hover:text-black transition-all duration-300"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          </div>
-
           {/* Decorative background glow behind the card */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[var(--color-gold)] opacity-[0.03] blur-[100px] rounded-full pointer-events-none z-0" />
 
-          <div className="absolute -bottom-8 md:-bottom-8 -bottom-24 left-1/2 -translate-x-1/2 text-[9px] text-[var(--color-gold)] tracking-widest uppercase opacity-70 animate-pulse text-center w-full">
+          <div className="absolute -bottom-8 md:-bottom-8 left-1/2 -translate-x-1/2 text-[9px] text-[var(--color-gold)] tracking-widest uppercase opacity-70 animate-pulse text-center w-full whitespace-nowrap">
             <span className="hidden md:inline">Klik kartu terdepan untuk melihat detail penyakit</span>
-            <span className="md:hidden">Geser dengan tombol panah, lalu klik untuk detail</span>
+            <span className="md:hidden">← Geser untuk mengubah • Klik untuk detail →</span>
           </div>
         </div>
       </div>
