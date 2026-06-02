@@ -254,3 +254,22 @@ body {
   90% { opacity: 1; }
   100% { top: 100%; opacity: 0; }
 }
+
+/* ── Drawer Animations ── */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.drawer-slide-in {
+  animation: slideInRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.drawer-backdrop {
+  animation: fadeIn 0.25s ease-out forwards;
+}

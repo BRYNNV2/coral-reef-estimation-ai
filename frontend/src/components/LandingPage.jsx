@@ -51,7 +51,7 @@ const Particles = () => {
 /* ═══════════════════════════════════════════════════════════
    NAVBAR
    ═══════════════════════════════════════════════════════════ */
-const Navbar = ({ onExploreGallery }) => {
+const Navbar = ({ onExploreGallery, onModelDocs }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -93,6 +93,9 @@ const Navbar = ({ onExploreGallery }) => {
           <button onClick={onExploreGallery} className="hover:text-[var(--color-gold)] transition-colors duration-300 uppercase">
             Galeri
           </button>
+          <button onClick={onModelDocs} className="hover:text-[var(--color-gold)] transition-colors duration-300 uppercase">
+            Dokumentasi
+          </button>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -121,6 +124,12 @@ const Navbar = ({ onExploreGallery }) => {
             className="text-2xl font-serif tracking-widest text-[var(--color-gold)] uppercase mt-4 border border-gold-20 px-8 py-3 rounded-full bg-gold-5"
           >
             Masuk Galeri
+          </button>
+          <button
+            onClick={() => { setMobileMenuOpen(false); onModelDocs(); }}
+            className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors"
+          >
+            Dokumentasi AI
           </button>
         </div>
       )}
@@ -1281,7 +1290,7 @@ const Footer = () => {
 /* ═══════════════════════════════════════════════════════════
    LANDING PAGE (Main Component)
    ═══════════════════════════════════════════════════════════ */
-const LandingPage = ({ onStartDetection, onExploreGallery }) => {
+const LandingPage = ({ onStartDetection, onExploreGallery, onModelDocs }) => {
   // ── Lenis Smooth Scroll ──
   useEffect(() => {
     const lenis = new Lenis({
@@ -1323,7 +1332,7 @@ const LandingPage = ({ onStartDetection, onExploreGallery }) => {
   return (
     <div className="relative min-h-screen bg-[var(--color-ocean-950)]">
       <Particles />
-      <Navbar onExploreGallery={onExploreGallery} />
+      <Navbar onExploreGallery={onExploreGallery} onModelDocs={onModelDocs} />
       <HeroSection onStartDetection={onStartDetection} />
       <GallerySection onExploreGallery={onExploreGallery} />
       <AboutSection />

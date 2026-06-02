@@ -73,6 +73,7 @@ const Dashboard = ({ onBack }) => {
   const [error, setError] = useState(null);
   const [threshold, setThreshold] = useState(50); // Sensitivitas (10-90)
   const [sessionHistory, setSessionHistory] = useState([]); // Riwayat Analisis Lokal
+  const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const [comparePosition, setComparePosition] = useState(50); // Before/After slider position
   const [maskOpacity, setMaskOpacity] = useState(100); // Overlay mask opacity (0-100)
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
@@ -225,11 +226,12 @@ const Dashboard = ({ onBack }) => {
   };
 
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-[var(--color-ocean-950)] text-white pt-32 pb-16 px-4 md:px-8 overflow-x-hidden">
+    <>
+      <div ref={containerRef} className="relative min-h-screen bg-[var(--color-ocean-950)] text-white pt-32 pb-16 px-4 md:px-8 overflow-x-hidden">
       <DashboardParticles />
 
       {/* Navbar Dashboard */}
-      <header className="fixed top-0 left-0 w-full z-40 bg-[var(--color-ocean-950)]/90 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-5 flex items-center justify-between">
+      <header className="fixed top-0 left-0 w-full z-[50] bg-[var(--color-ocean-950)]/90 backdrop-blur-md border-b border-white/5 px-6 md:px-12 py-5 flex items-center justify-between">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-sm text-[var(--color-gold)] hover:text-[var(--color-gold-light)] transition-all cursor-pointer"
@@ -238,19 +240,33 @@ const Dashboard = ({ onBack }) => {
           <span className="hidden md:inline">Kembali ke Beranda</span>
         </button>
 
-        <div className="flex items-center gap-3">
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" className="opacity-80">
-            <circle cx="16" cy="16" r="14" stroke="#c9a96e" strokeWidth="1.5" />
-            <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
-          </svg>
-          <span className="font-serif text-sm tracking-widest text-gradient-gold uppercase">
-            CoralLens
-          </span>
+        <div className="flex items-center gap-4">
+          {sessionHistory.length > 0 && (
+            <button
+              onClick={() => setShowHistoryDrawer(!showHistoryDrawer)}
+              className="flex items-center gap-2 text-xs text-[var(--color-gold)] border border-gold-20 px-3 py-2 rounded-full hover:bg-gold-5 transition-all cursor-pointer"
+            >
+              <Clock size={14} />
+              <span className="hidden sm:inline">Riwayat</span>
+              <span className="bg-[var(--color-gold)] text-[var(--color-ocean-950)] text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                {sessionHistory.length}
+              </span>
+            </button>
+          )}
+          <div className="flex items-center gap-3">
+            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" className="opacity-80">
+              <circle cx="16" cy="16" r="14" stroke="#c9a96e" strokeWidth="1.5" />
+              <path d="M16 6 C12 12, 8 16, 16 26 C24 16, 20 12, 16 6Z" fill="#c9a96e" opacity="0.3" />
+            </svg>
+            <span className="font-serif text-sm tracking-widest text-gradient-gold uppercase">
+              CoralLens
+            </span>
+          </div>
         </div>
       </header>
 
       {/* Main Area */}
-      <main className={`dash-container mx-auto z-10 relative mt-8 print:hidden transition-all duration-500 ${sessionHistory.length > 0 && result && !isLoading ? 'max-w-[90rem]' : 'max-w-5xl'}`}>
+      <main className="dash-container mx-auto z-10 relative mt-8 print:hidden transition-all duration-500 max-w-5xl">
         {/* Title */}
         <div className="text-center mb-10">
           <h1 className="font-serif text-3xl md:text-4xl text-gradient-gold mb-3 font-medium">
@@ -415,7 +431,7 @@ const Dashboard = ({ onBack }) => {
 
         {/* ── STEP 4: DETAILED AI ANALYSIS RESULTS ── */}
         {result && (
-          <div className="flex flex-col xl:flex-row gap-8 items-start">
+          <div className="flex flex-col gap-8 items-start">
             
             {/* Main Content Area (Left & Middle) */}
             <div className="flex-1 flex flex-col gap-8 w-full">
@@ -773,42 +789,10 @@ const Dashboard = ({ onBack }) => {
             </div>
           </div>
 
-          {/* ── SESSION HISTORY SIDEBAR (Right Panel) ── */}
-          {sessionHistory.length > 0 && !isLoading && (
-            <div className="w-full xl:w-[320px] shrink-0 sticky top-28 glass-card rounded-2xl p-6 border border-gold-20 bg-black/40 flex flex-col max-h-[calc(100vh-140px)]">
-              <h3 className="font-serif text-lg text-[var(--color-gold)] mb-4 flex items-center gap-2 shrink-0">
-                <Clock size={18} />
-                Riwayat Sesi Ini
-              </h3>
-              
-              <div className="flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar flex-1">
-                {sessionHistory.map(item => (
-                  <div 
-                    key={item.id} 
-                    onClick={() => handleRestoreHistory(item)}
-                    className="bg-[#0a0a0a] border border-white/10 rounded-xl p-3 flex flex-col gap-2 shrink-0 cursor-pointer hover:border-gold-30 hover:bg-gold-5/10 transition-all group"
-                  >
-                    <div className="w-full h-24 rounded-lg overflow-hidden border border-white/5 relative">
-                      <img src={item.image} alt={item.filename} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    </div>
-                    <div className="text-[11px] text-gray-300 font-medium truncate mt-1" title={item.filename}>
-                      {item.filename}
-                    </div>
-                    <div className="flex justify-between items-center text-xs font-bold pt-1 border-t border-white/5">
-                      <span className="text-red-500">{item.damage}% Rusak</span>
-                      <span className="text-gray-500 text-[9px] bg-white/5 px-2 py-0.5 rounded-full">{item.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <p className="text-[9px] text-gray-500 mt-4 italic text-center shrink-0 border-t border-white/10 pt-3">
-                * Riwayat ini bersifat sementara dan hilang saat refresh.
-              </p>
-            </div>
-          )}
         </div>
       )}
+
+
 
         {/* ── STATS MODAL (TRAINING HISTORY) ── */}
         {showStatsModal && (
@@ -976,6 +960,68 @@ const Dashboard = ({ onBack }) => {
         </div>
       )}
     </div>
+
+      {/* ── SESSION HISTORY DRAWER (Slide-in from right) ── */}
+      {showHistoryDrawer && sessionHistory.length > 0 && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm print:hidden drawer-backdrop"
+            style={{ zIndex: 45 }}
+            onClick={() => setShowHistoryDrawer(false)}
+          />
+          
+          {/* Drawer Panel */}
+          <div 
+            className="fixed top-0 right-0 h-full w-[340px] max-w-[85vw] bg-[#0a0a0a] border-l border-gold-20 flex flex-col print:hidden drawer-slide-in"
+            style={{ zIndex: 46 }}
+          >
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between px-6 pt-8 pb-4 border-b border-white/10">
+              <h3 className="font-serif text-lg text-[var(--color-gold)] flex items-center gap-2">
+                <Clock size={18} />
+                Riwayat Sesi
+              </h3>
+              <button 
+                onClick={() => setShowHistoryDrawer(false)}
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Drawer Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4 custom-scrollbar">
+              {sessionHistory.map(item => (
+                <div 
+                  key={item.id} 
+                  onClick={() => { handleRestoreHistory(item); setShowHistoryDrawer(false); }}
+                  className="bg-white/[0.03] border border-white/10 rounded-xl p-3 flex flex-col gap-2 shrink-0 cursor-pointer hover:border-gold-30 hover:bg-gold-5/10 transition-all group"
+                >
+                  <div className="w-full h-28 rounded-lg overflow-hidden border border-white/5 relative">
+                    <img src={item.image} alt={item.filename} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="text-[11px] text-gray-300 font-medium truncate mt-1" title={item.filename}>
+                    {item.filename}
+                  </div>
+                  <div className="flex justify-between items-center text-xs font-bold pt-1 border-t border-white/5">
+                    <span className="text-red-500">{item.damage}% Rusak</span>
+                    <span className="text-gray-500 text-[9px] bg-white/5 px-2 py-0.5 rounded-full">{item.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Drawer Footer */}
+            <div className="px-6 py-4 border-t border-white/10">
+              <p className="text-[9px] text-gray-500 italic text-center">
+                * Riwayat ini bersifat sementara dan hilang saat refresh.
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
