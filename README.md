@@ -23,10 +23,11 @@ Proyek ini dibangun sebagai bagian dari Mata Kuliah **Pengolahan Citra Digital (
 
 ## ✨ Fitur Utama
 - **🔬 Segmentasi Presisi Piksel:** Memanfaatkan arsitektur **U-Net** dengan *backbone* **EfficientNet-b3**.
+- **🛡️ AI "Satpam" (CLIP):** Menggunakan *Zero-Shot Image Classification* via OpenAI CLIP (ViT-B/32) untuk menolak gambar yang bukan terumbu karang sebelum diproses segmentasi, meningkatkan efisiensi dan akurasi.
 - **🎛️ Dynamic Thresholding:** Memberikan kontrol sensitivitas pendeteksian kerusakan karang (0% - 100%) bagi peneliti.
-- **📄 Laporan Otomatis (PDF):** Kemampuan untuk mengekspor hasil analisis visual, metrik prediksi, dan **Rekomendasi Tindakan Otomatis** ke dalam bentuk PDF yang siap cetak.
-- **🎨 Visualisasi Before/After:** Slider interaktif halus untuk membandingkan foto mentah dan hasil olahan AI.
-- **📚 Ensiklopedia Karang:** Koleksi edukasi interaktif mengenai morfologi karang, dataset, dan berbagai penyakitnya.
+- **📄 Laporan Otomatis (PDF):** Kemampuan untuk mengekspor hasil analisis visual, metrik prediksi, dan rekomendasi ke dalam bentuk PDF.
+- **📱 PWA Ready (Progressive Web App):** Aplikasi dapat diinstal di perangkat *mobile* (Android/iOS) untuk pengalaman layaknya aplikasi native saat digunakan di lapangan.
+- **📚 Edukasi & Bantuan Ekstensif:** Dilengkapi dengan fitur Ensiklopedia Karang interaktif, halaman Dokumentasi Model AI, Research Paper, FAQ, serta portal Kontak untuk memfasilitasi riset lanjutan.
 
 ---
 
@@ -38,12 +39,12 @@ Proyek ini dibangun sebagai bagian dari Mata Kuliah **Pengolahan Citra Digital (
 |-----------|-------|--------|
 | **React.js** | 18.2+ | Library utama untuk membangun antarmuka pengguna (*Single Page Application*) berbasis komponen |
 | **Vite** | 8.0 | Build tool dan dev server modern dengan *Hot Module Replacement* (HMR) untuk pengembangan cepat |
+| **Vite PWA Plugin** | latest | Mengkonversi aplikasi menjadi PWA yang dapat diinstal *(installable)* di *smartphone* |
 | **TailwindCSS** | 4.0 | Utility-first CSS framework untuk styling responsif dan konsisten |
 | **GSAP** (GreenSock) | 3.x | Library animasi profesional untuk *scroll-triggered animations*, *parallax*, dan *entrance effects* |
 | **Lenis** | latest | Smooth scrolling library untuk pengalaman scroll yang halus dan premium |
-| **Recharts** | 2.x | Library visualisasi data React untuk menampilkan grafik radar, bar chart, dan pie chart hasil analisis |
-| **jsPDF** | latest | Library client-side untuk menghasilkan laporan PDF secara otomatis tanpa memerlukan server |
-| **html2canvas** | latest | Mengkonversi elemen HTML/DOM menjadi gambar canvas untuk disisipkan ke dalam laporan PDF |
+| **Recharts** | 2.x | Library visualisasi data React untuk menampilkan grafik hasil analisis |
+| **jsPDF & html2canvas** | latest | Library client-side untuk menghasilkan laporan PDF secara otomatis |
 | **Lucide React** | latest | Icon library modern berbasis SVG untuk elemen UI |
 
 **Fitur Frontend Utama:**
@@ -63,26 +64,25 @@ Proyek ini dibangun sebagai bagian dari Mata Kuliah **Pengolahan Citra Digital (
 | **FastAPI** | 0.100+ | Framework web API asinkron berkinerja tinggi dengan dokumentasi Swagger otomatis |
 | **Uvicorn** | 0.23+ | ASGI server untuk menjalankan aplikasi FastAPI dengan dukungan *async/await* |
 | **PyTorch** | 2.0+ | Framework deep learning utama untuk memuat dan menjalankan model U-Net |
-| **Segmentation Models PyTorch (SMP)** | 0.3.3+ | Library arsitektur segmentasi yang menyediakan U-Net dengan berbagai backbone encoder |
-| **OpenCV (cv2)** | 4.8+ | Library computer vision untuk preprocessing citra (resize, normalisasi, konversi warna) |
-| **Pillow (PIL)** | 10.0+ | Library pengolahan gambar Python untuk membaca, memanipulasi, dan menyimpan citra |
-| **Albumentations** | 1.3+ | Library augmentasi data citra untuk pipeline transformasi yang konsisten antara training dan inferensi |
-| **Rembg** | 2.0+ | Library background removal berbasis **U²-Net** untuk memisahkan objek karang dari latar belakang air |
-| **ONNX Runtime** | 1.14+ | Runtime engine untuk menjalankan model U²-Net (Rembg) dengan performa optimal |
-| **NumPy** | 1.24+ | Library komputasi numerik untuk manipulasi array dan matriks piksel |
-| **Pydantic** | 2.0+ | Library validasi data dan serialisasi untuk memastikan integritas request/response API |
-| **python-multipart** | 0.0.6+ | Middleware untuk menangani upload file multipart/form-data dari frontend |
+| **Hugging Face Transformers**| latest | Menjalankan pipeline `CLIPModel` dan `CLIPProcessor` (OpenAI ViT-B/32) |
+| **Segmentation Models PyTorch (SMP)** | 0.3.3+ | Library arsitektur segmentasi U-Net dengan berbagai backbone |
+| **OpenCV (cv2) & Pillow (PIL)** | latest | Library computer vision untuk membaca, preprocessing, dan menyimpan citra |
+| **Albumentations** | 1.3+ | Library augmentasi data citra |
+| **Rembg** | 2.0+ | Library background removal berbasis **U²-Net** |
+| **ONNX Runtime** | 1.14+ | Runtime engine untuk menjalankan model U²-Net (Rembg) |
+| **NumPy & Pydantic** | latest | Validasi data, manipulasi matriks piksel, dan serialisasi API |
 
 **Arsitektur API:**
 ```
 POST /api/v1/predict
 ├── Input:  Multipart Form (image file + threshold value)
 ├── Process:
-│   ├── 1. Background Removal (Rembg/U²-Net)
-│   ├── 2. Image Preprocessing (Resize 256×256, Normalize, Tensor)
-│   ├── 3. Model Inference (U-Net + EfficientNet-B3)
-│   ├── 4. Post-Processing (Threshold, Overlay Generation)
-│   └── 5. Metric Calculation (Damage %, Condition Label)
+│   ├── 1. Validasi Gambar (OpenAI CLIP ViT-B/32) -> Tolak jika bukan Karang
+│   ├── 2. Background Removal (Rembg/U²-Net)
+│   ├── 3. Image Preprocessing (Resize 256×256, Normalize, Tensor)
+│   ├── 4. Model Inference (U-Net + EfficientNet-B3)
+│   ├── 5. Post-Processing (Thresholding, Overlay Generation)
+│   └── 6. Metric Calculation (Damage %, Condition Label)
 └── Output: JSON {overlay_base64, damage_percentage, condition, confidence}
 ```
 
@@ -102,10 +102,10 @@ POST /api/v1/predict
 ### Pipeline Inferensi (Prediction Flow)
 
 ```
-┌─────────────┐    ┌──────────────┐    ┌────────────────┐    ┌──────────────┐    ┌─────────────┐
-│  Input Image │───▶│  Rembg U²-Net │───▶│  Preprocessing  │───▶│  U-Net Model  │───▶│  Output Mask │
-│  (JPG/PNG)   │    │  (BG Removal) │    │  (256×256, Norm)│    │  (EfficientNet)│    │  (Overlay)   │
-└─────────────┘    └──────────────┘    └────────────────┘    └──────────────┘    └─────────────┘
+┌─────────────┐    ┌──────────────┐    ┌──────────────┐    ┌────────────────┐    ┌─────────────┐
+│ Input Image │───▶│ CLIP "Satpam"│───▶│ Rembg U²-Net │───▶│  U-Net Model   │───▶│ Output Mask │
+│  (JPG/PNG)  │    │(Validasi Obj)│    │ (BG Removal) │    │ (EfficientNet) │    │  (Overlay)  │
+└─────────────┘    └──────────────┘    └──────────────┘    └────────────────┘    └─────────────┘
 ```
 
 ### 1. Background Removal — U²-Net (Rembg)
@@ -226,8 +226,12 @@ CoralLens/
 │       ├── components/       # UI Components
 │       │   ├── LandingPage.jsx   # Halaman utama (Hero, About, Features, dll)
 │       │   ├── Dashboard.jsx     # Dashboard analisis AI & hasil deteksi
-│       │   └── GalleryPage.jsx   # Ensiklopedia spesies karang interaktif
-│       ├── App.jsx           # Router & state management utama
+│       │   ├── GalleryPage.jsx   # Ensiklopedia spesies karang interaktif
+│       │   ├── ModelDocsPage.jsx # Dokumentasi teknis model AI
+│       │   ├── ResearchPage.jsx  # Literatur dan jurnal penelitian
+│       │   ├── FAQPage.jsx       # Bantuan teknis (Frequently Asked Questions)
+│       │   └── ContactPage.jsx   # Form kontak riset & kolaborasi
+│       ├── App.jsx           # Router & state management utama (Global Scroll To Top)
 │       └── index.css         # Design system & Tailwind configuration
 ├── colab_training.ipynb      # Notebook Google Colab untuk training model
 ├── project_documentation.md  # Dokumen riset dan dokumentasi teknis

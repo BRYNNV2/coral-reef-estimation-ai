@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown, Plus } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -51,14 +51,33 @@ const Particles = () => {
 /* ═══════════════════════════════════════════════════════════
    NAVBAR
    ═══════════════════════════════════════════════════════════ */
-const Navbar = ({ onExploreGallery, onModelDocs }) => {
+const Navbar = ({ onExploreGallery, onModelDocs, onResearch, onFAQ, onContact }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [akademikOpen, setAkademikOpen] = useState(false);
+  const [bantuanOpen, setBantuanOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const bantuanRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+
+    // Close dropdown when clicking outside
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setAkademikOpen(false);
+      }
+      if (bantuanRef.current && !bantuanRef.current.contains(e.target)) {
+        setBantuanOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   return (
@@ -90,12 +109,76 @@ const Navbar = ({ onExploreGallery, onModelDocs }) => {
           <a href="#detection" className="hover:text-[var(--color-gold)] transition-colors duration-300">
             Deteksi
           </a>
-          <button onClick={onExploreGallery} className="hover:text-[var(--color-gold)] transition-colors duration-300 uppercase">
+          <button onClick={onExploreGallery} className="hover:text-[var(--color-gold)] transition-colors duration-300">
             Galeri
           </button>
-          <button onClick={onModelDocs} className="hover:text-[var(--color-gold)] transition-colors duration-300 uppercase">
-            Dokumentasi
-          </button>
+          {/* Akademik Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              onClick={() => setAkademikOpen(!akademikOpen)}
+              className="flex items-center gap-1.5 hover:text-white transition-colors duration-300 cursor-pointer"
+            >
+              Akademik
+              <svg 
+                width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                className={`transition-transform duration-300 ${akademikOpen ? 'rotate-180' : ''}`}
+              >
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            {/* Dropdown Panel */}
+            <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/60 overflow-hidden transition-all duration-300 origin-top ${akademikOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}>
+              <button 
+                onClick={() => { setAkademikOpen(false); onModelDocs(); }}
+                className="w-full text-left px-5 py-3.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--color-gold)] shrink-0"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                Dokumentasi AI
+              </button>
+              <div className="h-px bg-white/5 mx-4"/>
+              <button 
+                onClick={() => { setAkademikOpen(false); onResearch(); }}
+                className="w-full text-left px-5 py-3.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--color-gold)] shrink-0"><path d="M9 2v6l-2-1-2 1V2"/><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M14 10h-4"/><path d="M14 14h-4"/><path d="M14 18h-4"/></svg>
+                Research Paper
+              </button>
+            </div>
+          </div>
+
+          {/* Bantuan Dropdown */}
+          <div className="relative" ref={bantuanRef}>
+            <button 
+              onClick={() => setBantuanOpen(!bantuanOpen)}
+              className="flex items-center gap-1.5 hover:text-white transition-colors duration-300 cursor-pointer"
+            >
+              Bantuan
+              <svg 
+                width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                className={`transition-transform duration-300 ${bantuanOpen ? 'rotate-180' : ''}`}
+              >
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            {/* Dropdown Panel */}
+            <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/60 overflow-hidden transition-all duration-300 origin-top ${bantuanOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}>
+              <button 
+                onClick={() => { setBantuanOpen(false); onFAQ(); }}
+                className="w-full text-left px-5 py-3.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--color-gold)] shrink-0"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/></svg>
+                FAQ
+              </button>
+              <div className="h-px bg-white/5 mx-4"/>
+              <button 
+                onClick={() => { setBantuanOpen(false); onContact(); }}
+                className="w-full text-left px-5 py-3.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--color-gold)] shrink-0"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Hubungi Kami
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -108,31 +191,91 @@ const Navbar = ({ onExploreGallery, onModelDocs }) => {
       </nav>
 
       {/* Mobile Menu Fullscreen Dropdown */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[200] bg-[#0a0a0a]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 md:hidden text-white transition-all">
-          <button
-            className="absolute top-6 right-6 text-[var(--color-gold)] p-2"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <X size={32} />
-          </button>
-          <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors">Tentang</a>
-          <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors">Fitur</a>
-          <a href="#detection" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors">Deteksi</a>
-          <button
-            onClick={() => { setMobileMenuOpen(false); onExploreGallery(); }}
-            className="text-2xl font-serif tracking-widest text-[var(--color-gold)] uppercase mt-4 border border-gold-20 px-8 py-3 rounded-full bg-gold-5"
-          >
-            Masuk Galeri
-          </button>
-          <button
-            onClick={() => { setMobileMenuOpen(false); onModelDocs(); }}
-            className="text-2xl font-serif tracking-widest text-[var(--color-gold)] hover:text-white transition-colors"
-          >
-            Dokumentasi AI
-          </button>
-        </div>
-      )}
+      {mobileMenuOpen && (() => {
+        const menuItems = [
+          { label: 'Tentang', type: 'anchor', href: '#about' },
+          { label: 'Fitur', type: 'anchor', href: '#features' },
+          { label: 'Deteksi', type: 'anchor', href: '#detection' },
+          { label: 'Galeri', type: 'button', action: onExploreGallery },
+          { label: 'Dokumentasi AI', type: 'button', action: onModelDocs },
+          { label: 'Research Paper', type: 'button', action: onResearch },
+          { label: 'FAQ', type: 'button', action: onFAQ },
+          { label: 'Hubungi Kami', type: 'button', action: onContact },
+        ];
+
+        const MobileMenu = () => {
+          const [activeIndex, setActiveIndex] = useState(null);
+          const itemRefs = useRef([]);
+          const [bubbleStyle, setBubbleStyle] = useState({ opacity: 0 });
+
+          useEffect(() => {
+            if (activeIndex !== null && itemRefs.current[activeIndex]) {
+              const el = itemRefs.current[activeIndex];
+              setBubbleStyle({
+                top: el.offsetTop,
+                left: el.offsetLeft,
+                width: el.offsetWidth,
+                height: el.offsetHeight,
+                opacity: 1,
+              });
+            }
+          }, [activeIndex]);
+
+          const handleSelect = (item, idx) => {
+            setActiveIndex(idx);
+            setTimeout(() => {
+              setMobileMenuOpen(false);
+              if (item.type === 'anchor') {
+                const target = document.querySelector(item.href);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                item.action();
+              }
+            }, 300);
+          };
+
+          return (
+            <div className="fixed inset-0 z-[200] bg-[#0a0a0a]/95 backdrop-blur-xl flex flex-col items-center justify-center md:hidden">
+              <button
+                className="absolute top-6 right-6 text-[var(--color-gold)] p-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <X size={32} />
+              </button>
+
+              <div className="relative flex flex-col items-center gap-2">
+                {/* Floating Bubble */}
+                <div
+                  className="absolute rounded-full border border-[var(--color-gold)]/40 bg-[var(--color-gold)]/[0.08] backdrop-blur-sm transition-all duration-400 ease-out pointer-events-none"
+                  style={{
+                    ...bubbleStyle,
+                    transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  }}
+                />
+
+                {menuItems.map((item, idx) => (
+                  <button
+                    key={item.label}
+                    ref={(el) => (itemRefs.current[idx] = el)}
+                    onTouchStart={() => setActiveIndex(idx)}
+                    onMouseEnter={() => setActiveIndex(idx)}
+                    onClick={() => handleSelect(item, idx)}
+                    className={`relative z-10 text-2xl font-serif tracking-widest px-10 py-3 rounded-full transition-colors duration-300 ${
+                      activeIndex === idx 
+                        ? 'text-white' 
+                        : 'text-[var(--color-gold)]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        };
+
+        return <MobileMenu />;
+      })()}
     </>
   );
 };
@@ -889,7 +1032,7 @@ const FeaturesSection = () => {
       }
     );
 
-    // Reveal Center Mockup
+    // Reveal Center Mockup (Entrance)
     gsap.fromTo(phoneRef.current,
       { y: 100, opacity: 0, scale: 0.9 },
       {
@@ -906,13 +1049,25 @@ const FeaturesSection = () => {
       }
     );
 
+    // Parallax Scroll Follow — HP mengikuti pergerakan scroll
+    gsap.to(phoneRef.current, {
+      yPercent: -15,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1.2,
+      },
+    });
+
   }, { scope: sectionRef });
 
   return (
     <section
       id="features"
       ref={sectionRef}
-      className="relative py-28 md:py-36 px-6"
+      className="relative pt-28 md:pt-36 pb-12 md:pb-16 px-6"
     >
       <div className="max-w-7xl mx-auto">
 
@@ -1018,10 +1173,10 @@ const DetectionSection = ({ onStartDetection }) => {
     <section
       id="detection"
       ref={sectionRef}
-      className="relative py-28 md:py-36 px-6"
+      className="relative pt-12 md:pt-16 pb-28 md:pb-36 px-6"
     >
       {/* Top separator */}
-      <div className="max-w-6xl mx-auto mb-20 flex justify-center">
+      <div className="max-w-6xl mx-auto mb-16 flex justify-center">
         <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--color-gold)]/20 to-transparent" />
       </div>
 
@@ -1074,10 +1229,9 @@ const DetectionSection = ({ onStartDetection }) => {
 /* ═══════════════════════════════════════════════════════════
    FOOTER — Immersive Design
    ═══════════════════════════════════════════════════════════ */
-const Footer = () => {
+const Footer = ({ onResearch }) => {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [showResearchModal, setShowResearchModal] = useState(false);
 
   const handleSubscribe = () => {
     if (email && email.includes('@')) {
@@ -1147,7 +1301,7 @@ const Footer = () => {
             <a href="#about" className="hover:text-white transition-colors">About Us</a>
             <a href="#features" className="hover:text-white transition-colors">Technology</a>
             <a href="#gallery" className="hover:text-white transition-colors">Gallery</a>
-            <button onClick={() => setShowResearchModal(true)} className="text-left hover:text-white transition-colors">Research</button>
+            <button onClick={onResearch} className="text-left hover:text-white transition-colors cursor-pointer">Research</button>
             <a href="#" className="hover:text-white transition-colors">Partners</a>
             <a href="#" className="hover:text-white transition-colors">Contact</a>
           </div>
@@ -1197,110 +1351,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* RESEARCH MODAL */}
-      {showResearchModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-[#02080a]/90 backdrop-blur-md"
-            onClick={() => setShowResearchModal(false)}
-          />
-          
-          {/* Modal Container */}
-          <div className="relative w-full max-w-4xl bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh]">
-            
-            {/* Header */}
-            <div className="border-b border-white/10 p-6 flex justify-between items-center bg-black/40">
-              <div>
-                <h3 className="font-serif text-2xl text-[var(--color-gold)] uppercase tracking-wider">Research Documentation</h3>
-                <p className="text-xs text-gray-400 tracking-widest uppercase mt-1">Sistem Estimasi Kondisi Terumbu Karang Berbasis AI</p>
-              </div>
-              <button 
-                onClick={() => setShowResearchModal(false)}
-                className="text-gray-500 hover:text-white transition-colors p-2"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="p-6 md:p-10 overflow-y-auto" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(201,169,110,0.3) transparent' }}>
-              
-              {/* Abstract */}
-              <div className="mb-10">
-                <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-[var(--color-gold)] rounded-full"/> Abstrak
-                </h4>
-                <p className="text-gray-400 text-sm leading-relaxed text-justify">
-                  Sistem <strong className="text-white">CoralLens</strong> merupakan web-based application yang dirancang untuk melakukan segmentasi semantik pada citra terumbu karang. Tujuan utamanya adalah mengekstraksi metrik persentase area kerusakan (pemutihan/penyakit) dibandingkan dengan area karang sehat, guna mendukung upaya restorasi dan pemantauan ekosistem laut oleh Dinas Kelautan maupun NGO.
-                </p>
-              </div>
-
-              {/* Architecture & Workflow */}
-              <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"/> Arsitektur Model
-                  </h4>
-                  <ul className="text-sm text-gray-400 space-y-2 list-disc ml-4">
-                    <li><strong>Framework:</strong> PyTorch (FastAPI Backend)</li>
-                    <li><strong>Network:</strong> Semantic Segmentation U-Net</li>
-                    <li><strong>Backbone:</strong> EfficientNet-B3 (Feature Extractor)</li>
-                    <li><strong>Preprocessing:</strong> Rembg U²-Net (Alpha Matting)</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"/> Evaluasi Metrik AI
-                  </h4>
-                  <ul className="text-sm text-gray-400 space-y-2 list-disc ml-4">
-                    <li><strong>Global Accuracy:</strong> <span className="text-white font-mono">91.55%</span></li>
-                    <li><strong>F1-Score:</strong> <span className="text-white font-mono">93.02%</span> (Equilibrium)</li>
-                    <li><strong>Mean IoU:</strong> <span className="text-white font-mono">86.95%</span> (Intersection over Union)</li>
-                    <li><strong>Loss Function:</strong> Binary Cross Entropy</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Experiments & Optimizations */}
-              <div className="mb-10">
-                <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"/> Eksperimen & Optimasi Threshold
-                </h4>
-                <div className="bg-white/5 border border-white/10 p-5 rounded-xl">
-                  <p className="text-sm text-gray-400 leading-relaxed text-justify mb-4">
-                    Prediksi mask piksel menggunakan fungsi aktivasi <strong className="text-white">Sigmoid</strong>. Sistem dilengkapi parameter *Threshold Control* dinamis:
-                  </p>
-                  <ul className="text-sm text-gray-400 space-y-3">
-                    <li className="flex gap-3"><span className="text-[var(--color-gold)] font-bold">100%</span> AI bertindak perfeksionis, hanya meloloskan piksel pucat ekstrem. Persentase rusak turun drastis.</li>
-                    <li className="flex gap-3"><span className="text-[var(--color-gold)] font-bold">0%</span> AI meloloskan semua kecurigaan piksel, memprediksi kerusakan menjadi maksimal.</li>
-                    <li className="flex gap-3"><span className="text-[var(--color-gold)] font-bold">50%</span> Sweet-spot ekuilibrium (F1-Score tertinggi) yang diset sebagai default sistem.</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* System Limitations */}
-              <div>
-                <h4 className="text-red-400 font-bold text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full"/> Batasan Sistem (Known Limitations)
-                </h4>
-                <div className="space-y-4">
-                  <div className="border-l-2 border-red-500/50 pl-4">
-                    <h5 className="text-white text-sm font-bold">1. Kegagalan Background Removal pada Cluttered Image</h5>
-                    <p className="text-xs text-gray-400 mt-1 leading-relaxed">Algoritma <i>salience</i> terkadang menghapus struktur karang utama jika latar belakang perairan terlalu ramai (banyak ikan/terumbu tumpang tindih). Gambar ideal adalah *close-up/macro*.</p>
-                  </div>
-                  <div className="border-l-2 border-red-500/50 pl-4">
-                    <h5 className="text-white text-sm font-bold">2. Out of Distribution (OOD) - Spektrum Akuarium</h5>
-                    <p className="text-xs text-gray-400 mt-1 leading-relaxed">Pengujian pada foto akuarium dengan sorotan lampu <i>Actinic Blue/Purple</i> (ungu neon) menyebabkan bias deteksi hingga 70%. Model butuh retraining tambahan karena dataset primer 100% menggunakan spektrum cahaya matahari alami.</p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
-
     </footer>
   );
 };
@@ -1308,7 +1358,7 @@ const Footer = () => {
 /* ═══════════════════════════════════════════════════════════
    LANDING PAGE (Main Component)
    ═══════════════════════════════════════════════════════════ */
-const LandingPage = ({ onStartDetection, onExploreGallery, onModelDocs }) => {
+const LandingPage = ({ onStartDetection, onExploreGallery, onModelDocs, onResearch, onFAQ, onContact }) => {
   // ── Lenis Smooth Scroll ──
   useEffect(() => {
     const lenis = new Lenis({
@@ -1350,14 +1400,14 @@ const LandingPage = ({ onStartDetection, onExploreGallery, onModelDocs }) => {
   return (
     <div className="relative min-h-screen bg-[var(--color-ocean-950)]">
       <Particles />
-      <Navbar onExploreGallery={onExploreGallery} onModelDocs={onModelDocs} />
+      <Navbar onExploreGallery={onExploreGallery} onModelDocs={onModelDocs} onResearch={onResearch} onFAQ={onFAQ} onContact={onContact} />
       <HeroSection onStartDetection={onStartDetection} />
       <GallerySection onExploreGallery={onExploreGallery} />
       <AboutSection />
       <DatasetSection />
       <FeaturesSection />
       <DetectionSection onStartDetection={onStartDetection} />
-      <Footer />
+      <Footer onResearch={onResearch} />
     </div>
   );
 };
