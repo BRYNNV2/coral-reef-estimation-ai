@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { ArrowLeft, Upload, FileImage, ShieldCheck, Activity, Award, Clock, Download, RefreshCw, Zap, Info, Printer } from 'lucide-react';
+import { ArrowLeft, Upload, FileImage, ShieldCheck, Activity, Award, Clock, Download, RefreshCw, Zap, Info, Printer, Trash2 } from 'lucide-react';
 import { PieChart, Pie, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip as RechartsTooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 
@@ -74,6 +74,7 @@ const Dashboard = ({ onBack }) => {
   const [threshold, setThreshold] = useState(50); // Sensitivitas (10-90)
   const [sessionHistory, setSessionHistory] = useState([]); // Riwayat Analisis Lokal
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [comparePosition, setComparePosition] = useState(50); // Before/After slider position
   const [maskOpacity, setMaskOpacity] = useState(100); // Overlay mask opacity (0-100)
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
@@ -153,8 +154,13 @@ const Dashboard = ({ onBack }) => {
     formData.append('threshold', (threshold / 100).toString());
 
     try {
-      // API call ke Hugging Face backend
-      const response = await fetch('https://mhmddfebry-coral-reef-ai-backend.hf.space/api/v1/predict', {
+      // Auto-detect: pakai backend lokal saat development, HuggingFace saat production
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const API_URL = isLocal 
+        ? 'http://localhost:8000/api/v1/predict' 
+        : 'https://mhmddfebry-coral-reef-ai-backend.hf.space/api/v1/predict';
+      
+      const response = await fetch(API_URL, {
         method: 'POST',
         body: formData,
       });
@@ -224,6 +230,21 @@ const Dashboard = ({ onBack }) => {
     setSelectedFile(item.fileObj);
     setShowOriginal(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteHistory = (e, id) => {
+    e.stopPropagation();
+    setSessionHistory(prev => prev.filter(item => item.id !== id));
+  };
+
+  const handleClearAllHistory = () => {
+    setShowClearConfirm(true);
+  };
+
+  const confirmClearAllHistory = () => {
+    setSessionHistory([]);
+    setShowHistoryDrawer(false);
+    setShowClearConfirm(false);
   };
 
   return (
@@ -999,8 +1020,19 @@ const Dashboard = ({ onBack }) => {
                   onClick={() => { handleRestoreHistory(item); setShowHistoryDrawer(false); }}
                   className="bg-white/[0.03] border border-white/10 rounded-xl p-3 flex flex-col gap-2 shrink-0 cursor-pointer hover:border-gold-30 hover:bg-gold-5/10 transition-all group"
                 >
-                  <div className="w-full h-28 rounded-lg overflow-hidden border border-white/5 relative">
+                  <div className="w-full h-28 rounded-lg overflow-hidden border border-white/5 relative group-hover:border-gold-30/50 transition-colors">
                     <img src={item.image} alt={item.filename} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    
+                    {/* Delete Button overlay */}
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={(e) => handleDeleteHistory(e, item.id)}
+                        className="bg-black/60 hover:bg-red-500/90 backdrop-blur-sm p-1.5 rounded-md text-white transition-colors cursor-pointer"
+                        title="Hapus riwayat ini"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
                   <div className="text-[11px] text-gray-300 font-medium truncate mt-1" title={item.filename}>
                     {item.filename}
@@ -1014,13 +1046,49 @@ const Dashboard = ({ onBack }) => {
             </div>
             
             {/* Drawer Footer */}
-            <div className="px-6 py-4 border-t border-white/10">
+            <div className="px-6 py-4 border-t border-white/10 flex flex-col gap-3">
+              <button 
+                onClick={handleClearAllHistory}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-all text-sm font-bold tracking-wider cursor-pointer"
+              >
+                <Trash2 size={16} />
+                HAPUS SEMUA RIWAYAT
+              </button>
               <p className="text-[9px] text-gray-500 italic text-center">
-                * Riwayat ini bersifat sementara dan hilang saat refresh.
+                * Riwayat ini bersifat sementara dan hilang saat refresh browser.
               </p>
             </div>
           </div>
         </>
+      )}
+
+      {/* ── CUSTOM CONFIRMATION MODAL ── */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] print:hidden p-4">
+          <div className="bg-[#111] border border-red-500/20 rounded-2xl p-6 w-full max-w-sm shadow-2xl flex flex-col items-center text-center transform scale-100 transition-all">
+            <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4 text-red-400">
+              <Trash2 size={28} />
+            </div>
+            <h3 className="text-xl font-serif text-[var(--color-gold)] mb-2">Hapus Semua Riwayat?</h3>
+            <p className="text-gray-400 text-sm mb-6">
+              Aksi ini tidak dapat dibatalkan. Semua data riwayat sesi Anda akan terhapus.
+            </p>
+            <div className="flex items-center gap-3 w-full">
+              <button 
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-gray-300 transition-colors text-sm font-bold tracking-wide cursor-pointer"
+              >
+                BATAL
+              </button>
+              <button 
+                onClick={confirmClearAllHistory}
+                className="flex-1 py-3 px-4 bg-red-500 hover:bg-red-600 rounded-xl text-white transition-colors text-sm font-bold tracking-wide cursor-pointer shadow-lg shadow-red-500/20"
+              >
+                YA, HAPUS
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

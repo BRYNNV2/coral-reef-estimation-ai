@@ -20,6 +20,14 @@ const metrics = [
 const pipelineSteps = [
   {
     step: '01',
+    title: 'Input Validation (Satpam AI)',
+    subtitle: 'OpenAI CLIP (ViT-B/32)',
+    desc: 'Sebelum diproses lebih lanjut, citra divalidasi oleh CLIP secara Zero-Shot Classification. Model membandingkan probabilitas gambar antara prompt "terumbu karang" dan "bukan terumbu karang". Jika gambar tidak relevan, proses otomatis ditolak.',
+    color: 'from-indigo-500 to-purple-600',
+    tech: ['Hugging Face Transformers', 'CLIPModel', 'Zero-Shot', 'Cosine Similarity'],
+  },
+  {
+    step: '02',
     title: 'Background Removal',
     subtitle: 'U²-Net (Rembg)',
     desc: 'Memisahkan objek terumbu karang dari latar belakang air laut menggunakan arsitektur U²-Net (U-square Net) dengan teknik alpha matting. Model salient object detection ini mengisolasi area karang agar inferensi segmentasi tidak terkontaminasi oleh noise lingkungan.',
@@ -27,7 +35,7 @@ const pipelineSteps = [
     tech: ['Rembg', 'U²-Net', 'ONNX Runtime', 'Alpha Matting'],
   },
   {
-    step: '02',
+    step: '03',
     title: 'Image Preprocessing',
     subtitle: 'Normalisasi & Transformasi',
     desc: 'Citra di-resize ke 256×256 piksel, dinormalisasi (0.0–1.0), dikonversi ke PyTorch Tensor dengan format CHW (Channel×Height×Width), lalu ditambahkan dimensi batch untuk input model.',
@@ -35,7 +43,7 @@ const pipelineSteps = [
     tech: ['OpenCV', 'Albumentations', 'NumPy', 'PyTorch Tensor'],
   },
   {
-    step: '03',
+    step: '04',
     title: 'Semantic Segmentation',
     subtitle: 'U-Net + EfficientNet-B3',
     desc: 'Backbone EfficientNet-B3 (pre-trained ImageNet, 18.4M parameter) mengekstrak fitur spasial multi-skala. Decoder U-Net dengan skip connections menggabungkan fitur low-level (tekstur, edge) dan high-level (semantik) untuk menghasilkan binary mask per piksel.',
@@ -43,7 +51,7 @@ const pipelineSteps = [
     tech: ['PyTorch', 'SMP Library', 'EfficientNet-B3', 'Sigmoid Activation'],
   },
   {
-    step: '04',
+    step: '05',
     title: 'Post-Processing',
     subtitle: 'Overlay & Metrik',
     desc: 'Probabilitas piksel di-threshold (default 0.5, adjustable). Mask berwarna ditempel di atas citra asli dengan alpha blending 50%. Sistem menghitung rasio kerusakan dan mengklasifikasikan kondisi karang (Sangat Baik → Kritis).',
