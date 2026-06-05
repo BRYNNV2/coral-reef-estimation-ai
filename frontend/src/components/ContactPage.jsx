@@ -109,8 +109,8 @@ const ContactPage = ({ onBack }) => {
                   <MapPin size={18} />
                 </div>
                 <div>
-                  <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-1">Laboratorium AI</h4>
-                  <p className="text-gray-400 text-sm">Computer Vision Research Group<br/>Fakultas Ilmu Komputer</p>
+                  <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-1">Universitas Maritim Raja Ali Haji</h4>
+                  <p className="text-gray-400 text-sm">Fakultas Teknik dan Teknologi Kemaritiman<br/>Teknik Informatika</p>
                 </div>
               </div>
 
@@ -120,7 +120,9 @@ const ContactPage = ({ onBack }) => {
                 </div>
                 <div>
                   <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-1">Repositori GitHub</h4>
-                  <p className="text-gray-400 text-sm hover:text-[var(--color-gold)] transition-colors cursor-pointer">github.com/corallens-ai</p>
+                  <a href="https://github.com/BRYNNV2/coral-reef-estimation-ai" target="_blank" rel="noopener noreferrer" className="text-gray-400 text-sm hover:text-[var(--color-gold)] transition-colors cursor-pointer block truncate w-64 md:w-auto">
+                    github.com/BRYNNV2/coral-reef-estimation-ai
+                  </a>
                 </div>
               </div>
             </div>

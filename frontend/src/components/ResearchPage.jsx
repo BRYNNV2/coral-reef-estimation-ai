@@ -3,7 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
-import { ArrowLeft, BookOpen, FlaskConical, Target, TrendingUp, Cpu, Database, Microscope } from 'lucide-react';
+import { ArrowLeft, BookOpen, FlaskConical, Target, TrendingUp, Microscope, Globe, FileText, CheckCircle2, Library, Activity } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -77,9 +77,9 @@ const AbstractSection = () => {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   ARCHITECTURE SECTION
+   PROBLEM STATEMENT SECTION
    ═══════════════════════════════════════════════════════════ */
-const ArchitectureSection = () => {
+const ProblemStatementSection = () => {
   const ref = useRef(null);
 
   useGSAP(() => {
@@ -93,56 +93,35 @@ const ArchitectureSection = () => {
     <section ref={ref} className="py-20 md:py-28 px-6 max-w-5xl mx-auto">
       <div className="reveal-up flex mb-6"><div className="gold-line" /></div>
       <p className="reveal-up text-[var(--color-gold)] text-xs tracking-[0.3em] uppercase mb-4 font-bold flex items-center gap-2">
-        <Cpu size={14} /> Arsitektur Model
+        <Globe size={14} /> Latar Belakang Masalah
       </p>
       <h2 className="reveal-up font-serif text-3xl md:text-5xl text-white mb-12 uppercase tracking-tight">
-        U-Net + EfficientNet-B3
+        Krisis Ekosistem Laut & Tantangan Pemantauan
       </h2>
 
       <div className="reveal-up grid md:grid-cols-2 gap-6">
-        {/* Framework & Network */}
+        <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 hover:border-red-500/30 transition-all duration-500">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+              <TrendingUp size={20} className="text-red-400 rotate-180" />
+            </div>
+            <h3 className="text-white font-bold text-lg uppercase tracking-wider">Pemutihan Massal Karang</h3>
+          </div>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify">
+            Perubahan iklim global dan peningkatan suhu permukaan laut telah memicu peristiwa pemutihan karang (coral bleaching) skala besar. Jika tidak segera dipantau dan ditangani, kerusakan ini dapat menyebabkan runtuhnya keanekaragaman hayati ekosistem terumbu karang yang berdampak langsung pada perikanan dan pariwisata.
+          </p>
+        </div>
+
         <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 hover:border-blue-500/30 transition-all duration-500">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-              <FlaskConical size={20} className="text-blue-400" />
+              <Target size={20} className="text-blue-400" />
             </div>
-            <h3 className="text-white font-bold text-lg uppercase tracking-wider">Stack Teknologi</h3>
+            <h3 className="text-white font-bold text-lg uppercase tracking-wider">Keterbatasan Pemantauan Manual</h3>
           </div>
-          <ul className="space-y-3 text-sm text-gray-400">
-            <li className="flex gap-2"><span className="text-[var(--color-gold)]">▸</span> <strong className="text-white">Framework:</strong> PyTorch (FastAPI Backend)</li>
-            <li className="flex gap-2"><span className="text-[var(--color-gold)]">▸</span> <strong className="text-white">Network:</strong> Semantic Segmentation U-Net</li>
-            <li className="flex gap-2"><span className="text-[var(--color-gold)]">▸</span> <strong className="text-white">Backbone:</strong> EfficientNet-B3 (Feature Extractor)</li>
-            <li className="flex gap-2"><span className="text-[var(--color-gold)]">▸</span> <strong className="text-white">Preprocessing:</strong> Rembg U²-Net (Alpha Matting)</li>
-            <li className="flex gap-2"><span className="text-[var(--color-gold)]">▸</span> <strong className="text-white">Input Validation:</strong> CLIP Zero-Shot Classification</li>
-          </ul>
-        </div>
-
-        {/* Evaluation Metrics */}
-        <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 hover:border-emerald-500/30 transition-all duration-500">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-              <TrendingUp size={20} className="text-emerald-400" />
-            </div>
-            <h3 className="text-white font-bold text-lg uppercase tracking-wider">Evaluasi Metrik AI</h3>
-          </div>
-          <ul className="space-y-3 text-sm text-gray-400">
-            <li className="flex justify-between items-center py-2 border-b border-white/5">
-              <span>Global Accuracy</span>
-              <span className="text-white font-mono font-bold text-lg">91.55%</span>
-            </li>
-            <li className="flex justify-between items-center py-2 border-b border-white/5">
-              <span>F1-Score (Equilibrium)</span>
-              <span className="text-white font-mono font-bold text-lg">93.02%</span>
-            </li>
-            <li className="flex justify-between items-center py-2 border-b border-white/5">
-              <span>Mean IoU</span>
-              <span className="text-white font-mono font-bold text-lg">86.95%</span>
-            </li>
-            <li className="flex justify-between items-center py-2">
-              <span>Loss Function</span>
-              <span className="text-white font-mono font-bold">BCE</span>
-            </li>
-          </ul>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify">
+            Metode tradisional pemantauan kesehatan karang melibatkan penyelam yang mengambil foto dan menganalisisnya secara manual. Proses ini tidak hanya memakan waktu dan biaya, tetapi juga rentan terhadap subjektivitas observer. Dibutuhkan alat analisis kuantitatif yang cepat, otomatis, dan akurat.
+          </p>
         </div>
       </div>
     </section>
@@ -150,9 +129,9 @@ const ArchitectureSection = () => {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   DATASET SECTION
+   METHODOLOGY SECTION
    ═══════════════════════════════════════════════════════════ */
-const DatasetSection = () => {
+const MethodologySection = () => {
   const ref = useRef(null);
 
   useGSAP(() => {
@@ -162,33 +141,35 @@ const DatasetSection = () => {
     });
   }, { scope: ref });
 
-  const trainingConfig = [
-    { param: 'Sumber Dataset', value: 'Roboflow (Citra Bawah Laut)' },
-    { param: 'Augmentasi', value: 'HorizontalFlip, VerticalFlip, RandomBrightnessContrast, GaussNoise, ShiftScaleRotate' },
-    { param: 'Loss Function', value: 'Binary Cross Entropy (BCE)' },
-    { param: 'Optimizer', value: 'Adam (lr = 1e-4)' },
-    { param: 'Input Size', value: '256 × 256 piksel' },
-    { param: 'Batch Size', value: '16' },
-    { param: 'Epochs', value: '~50 dengan Early Stopping' },
-    { param: 'Pre-trained', value: 'ImageNet weights (Transfer Learning)' },
+  const methods = [
+    { title: 'Pengumpulan Data', desc: 'Dataset citra bawah laut primer diperoleh dari repositori Roboflow, yang mencakup variasi spesies karang sehat, mengalami pemutihan, dan terjangkit penyakit.' },
+    { title: 'Anotasi & Pre-processing', desc: 'Anotasi mask biner dilakukan untuk memisahkan kelas sehat dan rusak. Citra diperkuat (augmented) secara geometri dan warna untuk meningkatkan ketahanan model terhadap kondisi air keruh.' },
+    { title: 'Pemilihan Arsitektur', desc: 'U-Net dipilih karena kemampuannya mempertahankan informasi spasial detail resolusi tinggi, sangat penting untuk mendeteksi tekstur halus penyakit karang. EfficientNet digunakan sebagai encoder untuk efisiensi ekstraksi fitur.' },
+    { title: 'Validasi Object (CLIP)', desc: 'Menghindari false-positive dari citra lingkungan non-karang menggunakan zero-shot classification OpenAI CLIP sebelum citra diproses oleh model U-Net.' }
   ];
 
   return (
     <section ref={ref} className="py-20 md:py-28 px-6 max-w-5xl mx-auto">
       <div className="reveal-up flex mb-6"><div className="gold-line" /></div>
       <p className="reveal-up text-[var(--color-gold)] text-xs tracking-[0.3em] uppercase mb-4 font-bold flex items-center gap-2">
-        <Database size={14} /> Dataset & Training
+        <FlaskConical size={14} /> Metodologi Penelitian
       </p>
       <h2 className="reveal-up font-serif text-3xl md:text-5xl text-white mb-12 uppercase tracking-tight">
-        Konfigurasi Pelatihan
+        Desain & Pendekatan Riset
       </h2>
 
-      <div className="reveal-up bg-white/[0.02] border border-white/10 rounded-2xl p-6 md:p-8">
-        <div className="grid md:grid-cols-2 gap-x-12 gap-y-1">
-          {trainingConfig.map((item) => (
-            <div key={item.param} className="flex justify-between items-start py-4 border-b border-white/5">
-              <span className="text-[var(--color-gold)] text-xs tracking-widest uppercase font-semibold">{item.param}</span>
-              <span className="text-gray-300 text-sm text-right max-w-[60%]">{item.value}</span>
+      <div className="reveal-up bg-white/[0.02] border border-white/10 rounded-2xl p-6 md:p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-3xl rounded-full" />
+        <div className="space-y-6 relative z-10">
+          {methods.map((item, i) => (
+            <div key={i} className="flex items-start gap-4 pb-6 border-b border-white/5 last:border-0 last:pb-0">
+              <div className="w-8 h-8 rounded-full bg-[var(--color-gold)]/10 text-[var(--color-gold)] flex items-center justify-center font-bold text-xs shrink-0 mt-1">
+                0{i + 1}
+              </div>
+              <div>
+                <h4 className="text-white font-bold mb-2 uppercase tracking-wide text-sm">{item.title}</h4>
+                <p className="text-gray-400 text-sm leading-relaxed text-justify">{item.desc}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -198,9 +179,58 @@ const DatasetSection = () => {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   THRESHOLD EXPERIMENT SECTION
+   LITERATURE REVIEW SECTION
    ═══════════════════════════════════════════════════════════ */
-const ThresholdSection = () => {
+const LiteratureReviewSection = () => {
+  const ref = useRef(null);
+
+  useGSAP(() => {
+    gsap.fromTo(ref.current.querySelectorAll('.reveal-up'), { y: 50, opacity: 0 }, {
+      y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: 'power3.out',
+      scrollTrigger: { trigger: ref.current, start: 'top 80%' },
+    });
+  }, { scope: ref });
+
+  return (
+    <section ref={ref} className="py-20 md:py-28 px-6 max-w-5xl mx-auto">
+      <div className="reveal-up flex mb-6"><div className="gold-line" /></div>
+      <p className="reveal-up text-[var(--color-gold)] text-xs tracking-[0.3em] uppercase mb-4 font-bold flex items-center gap-2">
+        <Library size={14} /> Kajian Pustaka
+      </p>
+      <h2 className="reveal-up font-serif text-3xl md:text-5xl text-white mb-12 uppercase tracking-tight">
+        Evolusi Pemantauan Karang
+      </h2>
+
+      <div className="reveal-up space-y-6">
+        <div className="bg-white/[0.02] border border-white/5 p-6 md:p-8 rounded-2xl hover:bg-white/[0.04] transition-all">
+          <h4 className="text-[var(--color-gold)] font-bold mb-3 uppercase tracking-wide text-sm">Metode Konvensional (Line Intercept Transect)</h4>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify">
+            Secara historis, ekologi terumbu karang mengandalkan observasi manual in-situ. Ahli biologi laut menggunakan meteran (transect) di bawah air dan mencatat kondisi karang. Metode ini sangat lambat, dibatasi oleh tabung oksigen (SCUBA), dan menghasilkan bias pengamatan antar penyelam (observer bias).
+          </p>
+        </div>
+        
+        <div className="bg-white/[0.02] border border-white/5 p-6 md:p-8 rounded-2xl hover:bg-white/[0.04] transition-all">
+          <h4 className="text-[var(--color-gold)] font-bold mb-3 uppercase tracking-wide text-sm">Computer Vision Klasik (Thresholding Warna)</h4>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify">
+            Awal mula digitalisasi menggunakan pemrosesan piksel berdasarkan ruang warna (HSV/RGB). Namun, atenuasi cahaya di bawah air (hilangnya spektrum merah di kedalaman) menyebabkan algoritma klasik sering gagal membedakan karang putih akibat bleaching dengan pasir putih atau pantulan cahaya matahari.
+          </p>
+        </div>
+
+        <div className="bg-white/[0.02] border border-white/5 p-6 md:p-8 rounded-2xl hover:border-emerald-500/20 transition-all">
+          <h4 className="text-emerald-400 font-bold mb-3 uppercase tracking-wide text-sm">Semantic Segmentation (U-Net)</h4>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify">
+            Berbeda dengan image classification yang hanya melabeli seluruh gambar, Semantic Segmentation memprediksi kelas pada tingkat piksel (pixel-wise). U-Net terbukti sangat tangguh karena arsitektur encoder-decoder dengan skip-connection mampu mempertahankan detail batas tepi karang (edge retention) meskipun dalam citra beresolusi rendah atau kabur.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════
+   ECOLOGICAL ANALYSIS SECTION
+   ═══════════════════════════════════════════════════════════ */
+const EcologicalAnalysisSection = () => {
   const ref = useRef(null);
 
   useGSAP(() => {
@@ -210,39 +240,43 @@ const ThresholdSection = () => {
     });
   }, { scope: ref });
 
-  const thresholdLevels = [
-    { value: '100%', label: 'Sangat Ketat', desc: 'AI bertindak perfeksionis, hanya meloloskan piksel pucat ekstrem. Persentase kerusakan turun drastis.', bar: 'w-[15%]', color: 'bg-emerald-500' },
-    { value: '50%', label: 'Default (Optimal)', desc: 'Sweet-spot ekuilibrium dengan F1-Score tertinggi. Diset sebagai default sistem.', bar: 'w-[50%]', color: 'bg-[var(--color-gold)]' },
-    { value: '0%', label: 'Sangat Longgar', desc: 'AI meloloskan semua kecurigaan piksel, memprediksi kerusakan menjadi maksimal.', bar: 'w-full', color: 'bg-red-500' },
-  ];
-
   return (
     <section ref={ref} className="py-20 md:py-28 px-6 max-w-5xl mx-auto">
       <div className="reveal-up flex mb-6"><div className="gold-line" /></div>
       <p className="reveal-up text-[var(--color-gold)] text-xs tracking-[0.3em] uppercase mb-4 font-bold flex items-center gap-2">
-        <Target size={14} /> Eksperimen & Optimasi
+        <Activity size={14} /> Analisis Ekologis
       </p>
       <h2 className="reveal-up font-serif text-3xl md:text-5xl text-white mb-6 uppercase tracking-tight">
-        Threshold Control
+        Studi Kasus & Dampak Praktis
       </h2>
-      <p className="reveal-up text-gray-400 text-sm md:text-base max-w-2xl mb-14 leading-relaxed">
-        Prediksi mask piksel menggunakan fungsi aktivasi <strong className="text-white">Sigmoid</strong>. 
-        Threshold mengontrol seberapa "curiga" AI terhadap piksel yang berpotensi rusak.
+      <p className="reveal-up text-gray-400 text-sm md:text-base max-w-3xl mb-12 leading-relaxed">
+        Dari sekadar metrik Machine Learning (IoU 86.95%) menjadi data ekologis yang dapat ditindaklanjuti (actionable data) oleh pengambil kebijakan (policymakers).
       </p>
 
-      <div className="reveal-up space-y-5">
-        {thresholdLevels.map((t) => (
-          <div key={t.value} className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-all duration-300">
-            <div className="flex items-center gap-4 mb-3">
-              <span className="text-2xl font-serif font-bold text-white">{t.value}</span>
-              <span className="text-[var(--color-gold)] text-[10px] tracking-widest uppercase font-semibold">{t.label}</span>
-            </div>
-            <p className="text-gray-400 text-sm mb-4">{t.desc}</p>
-            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-              <div className={`h-full rounded-full ${t.bar} ${t.color} transition-all duration-700`} />
-            </div>
-          </div>
-        ))}
+      <div className="reveal-up grid md:grid-cols-2 gap-6">
+        <div className="bg-gradient-to-br from-red-500/10 to-orange-500/5 border border-red-500/20 rounded-2xl p-8 hover:shadow-lg hover:shadow-red-500/10 transition-all">
+          <h3 className="text-white font-bold text-lg uppercase tracking-wider mb-4 flex items-center gap-3">
+            <TrendingUp size={20} className="text-red-400" /> Deteksi Dini Epizootik
+          </h3>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify mb-4">
+            Penyakit mematikan seperti <em className="text-gray-300">Stony Coral Tissue Loss Disease (SCTLD)</em> atau <em className="text-gray-300">White Syndrome</em> sering menyebar dengan cepat layaknya epizootik. 
+          </p>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify">
+            Sistem CoralLens mampu mendeteksi margin putih lesi pada jaringan karang lebih presisi daripada mata manusia, memungkinkan isolasi koloni terinfeksi secara lebih dini sebelum menular ke ekosistem sekitarnya.
+          </p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/20 rounded-2xl p-8 hover:shadow-lg hover:shadow-emerald-500/10 transition-all">
+          <h3 className="text-white font-bold text-lg uppercase tracking-wider mb-4 flex items-center gap-3">
+            <CheckCircle2 size={20} className="text-emerald-400" /> Kuantifikasi Laju Pemulihan
+          </h3>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify mb-4">
+            Pasca kejadian El Niño atau pemutihan massal, otoritas konservasi sering kali menanam transplantasi karang (<em className="text-gray-300">coral nursery</em>).
+          </p>
+          <p className="text-gray-400 text-sm leading-relaxed text-justify">
+            Penggunaan kontrol ambang batas dinamis pada aplikasi ini memberikan kemampuan bagi peneliti untuk memantau laju pertumbuhan persentase luasan piksel sehat (<em className="text-gray-300">recovery rate</em>) dari bulan ke bulan tanpa merusak struktur karang.
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -284,9 +318,10 @@ const ResearchPage = ({ onBack }) => {
       {/* Sections */}
       <ResearchHero />
       <AbstractSection />
-      <ArchitectureSection />
-      <DatasetSection />
-      <ThresholdSection />
+      <ProblemStatementSection />
+      <LiteratureReviewSection />
+      <MethodologySection />
+      <EcologicalAnalysisSection />
 
       {/* Footer */}
       <footer className="py-16 px-6 text-center border-t border-white/5">
