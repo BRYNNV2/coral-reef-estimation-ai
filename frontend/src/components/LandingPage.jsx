@@ -1229,7 +1229,7 @@ const DetectionSection = ({ onStartDetection }) => {
 /* ═══════════════════════════════════════════════════════════
    FOOTER — Immersive Design
    ═══════════════════════════════════════════════════════════ */
-const Footer = ({ onResearch }) => {
+const Footer = ({ onResearch, onPrivacy, onTerms, onContact, onPartners }) => {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -1302,8 +1302,8 @@ const Footer = ({ onResearch }) => {
             <a href="#features" className="hover:text-white transition-colors">Technology</a>
             <a href="#gallery" className="hover:text-white transition-colors">Gallery</a>
             <button onClick={onResearch} className="text-left hover:text-white transition-colors cursor-pointer">Research</button>
-            <a href="#" className="hover:text-white transition-colors">Partners</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+            <button onClick={onPartners} className="text-left hover:text-white transition-colors cursor-pointer">Partners</button>
+            <button onClick={onContact} className="text-left hover:text-white transition-colors cursor-pointer">Contact</button>
           </div>
         </div>
 
@@ -1346,8 +1346,8 @@ const Footer = ({ onResearch }) => {
       <div className="max-w-7xl mx-auto w-full px-6 mt-12 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600 border-t border-white/10 pt-6 relative z-30 font-sans tracking-wide">
         <p>Designed for Pengolahan Citra Digital - Copyright © 2026 CoralLens - All Rights Reserved</p>
         <div className="flex gap-8">
-          <a href="#" className="hover:text-gray-400 transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-gray-400 transition-colors">Terms of Service</a>
+          <button onClick={onPrivacy} className="hover:text-gray-400 transition-colors cursor-pointer">Privacy Policy</button>
+          <button onClick={onTerms} className="hover:text-gray-400 transition-colors cursor-pointer">Terms of Service</button>
         </div>
       </div>
 
@@ -1358,7 +1358,7 @@ const Footer = ({ onResearch }) => {
 /* ═══════════════════════════════════════════════════════════
    LANDING PAGE (Main Component)
    ═══════════════════════════════════════════════════════════ */
-const LandingPage = ({ onStartDetection, onExploreGallery, onModelDocs, onResearch, onFAQ, onContact }) => {
+const LandingPage = ({ onStartDetection, onExploreGallery, onModelDocs, onResearch, onFAQ, onContact, onPrivacy, onTerms, onPartners }) => {
   // ── Lenis Smooth Scroll ──
   useEffect(() => {
     const lenis = new Lenis({
@@ -1407,7 +1407,7 @@ const LandingPage = ({ onStartDetection, onExploreGallery, onModelDocs, onResear
       <DatasetSection />
       <FeaturesSection />
       <DetectionSection onStartDetection={onStartDetection} />
-      <Footer onResearch={onResearch} />
+      <Footer onResearch={onResearch} onPrivacy={onPrivacy} onTerms={onTerms} onContact={onContact} onPartners={onPartners} />
     </div>
   );
 };

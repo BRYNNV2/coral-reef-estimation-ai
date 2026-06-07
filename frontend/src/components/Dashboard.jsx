@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { ArrowLeft, Upload, FileImage, ShieldCheck, Activity, Award, Clock, Download, RefreshCw, Zap, Info, Printer, Trash2 } from 'lucide-react';
+import { ArrowLeft, Upload, FileImage, ShieldCheck, Activity, Award, Clock, Download, RefreshCw, Zap, Info, Printer, Trash2, Images, X } from 'lucide-react';
 import { PieChart, Pie, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip as RechartsTooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 
@@ -71,14 +71,20 @@ const Dashboard = ({ onBack }) => {
   const [showOriginal, setShowOriginal] = useState(false);
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [error, setError] = useState(null);
-  const [threshold, setThreshold] = useState(50); // Sensitivitas (10-90)
-  const [sessionHistory, setSessionHistory] = useState([]); // Riwayat Analisis Lokal
+  const [threshold, setThreshold] = useState(50);
+  const [sessionHistory, setSessionHistory] = useState([]);
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [comparePosition, setComparePosition] = useState(50); // Before/After slider position
-  const [maskOpacity, setMaskOpacity] = useState(100); // Overlay mask opacity (0-100)
+  const [comparePosition, setComparePosition] = useState(50);
+  const [maskOpacity, setMaskOpacity] = useState(100);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
   const compareRef = useRef(null);
+
+  // ── Batch Processing State ──
+  const [batchQueue, setBatchQueue] = useState([]); // [{file, preview}]
+  const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0 });
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const MAX_BATCH_SIZE = 5;
 
   const containerRef = useRef(null);
 
@@ -106,18 +112,26 @@ const Dashboard = ({ onBack }) => {
     e.preventDefault();
     setIsDragOver(false);
     setError(null);
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if (files.length === 0) return;
+    if (files.length === 1) {
       processFile(files[0]);
+    } else {
+      processBatchFiles(files);
     }
   };
 
   const handleFileChange = (e) => {
     setError(null);
-    const files = e.target.files;
-    if (files && files.length > 0) {
+    const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+    if (files.length === 0) return;
+    if (files.length === 1) {
       processFile(files[0]);
+    } else {
+      processBatchFiles(files);
     }
+    // Reset input value agar bisa memilih file yang sama lagi
+    e.target.value = '';
   };
 
   const processFile = (file) => {
@@ -126,11 +140,59 @@ const Dashboard = ({ onBack }) => {
       return;
     }
     setSelectedFile(file);
+    setIsBatchMode(false);
+    setBatchQueue([]);
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result);
     };
     reader.readAsDataURL(file);
+  };
+
+  const processBatchFiles = (files) => {
+    const validFiles = files.filter(f => f.type.startsWith('image/'));
+    if (validFiles.length === 0) {
+      setError('Tidak ada file gambar yang valid.');
+      return;
+    }
+    if (validFiles.length > MAX_BATCH_SIZE) {
+      setError(`Maksimal ${MAX_BATCH_SIZE} gambar dalam satu kali proses. Anda memilih ${validFiles.length} gambar.`);
+      return;
+    }
+    // Build queue with previews
+    const queue = [];
+    let loaded = 0;
+    validFiles.forEach((file, idx) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        queue[idx] = { file, preview: reader.result };
+        loaded++;
+        if (loaded === validFiles.length) {
+          setBatchQueue(queue);
+          setIsBatchMode(true);
+          setSelectedFile(null);
+          setImagePreview(null);
+          setResult(null);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeBatchItem = (idx) => {
+    setBatchQueue(prev => {
+      const updated = prev.filter((_, i) => i !== idx);
+      if (updated.length === 0) {
+        setIsBatchMode(false);
+      } else if (updated.length === 1) {
+        // Switch to single mode
+        setIsBatchMode(false);
+        setSelectedFile(updated[0].file);
+        setImagePreview(updated[0].preview);
+        return [];
+      }
+      return updated;
+    });
   };
 
   // ── Call API to Predict Coral Reef Condition ──
@@ -218,6 +280,126 @@ const Dashboard = ({ onBack }) => {
     setResult(null);
     setError(null);
     setShowOriginal(false);
+    setIsBatchMode(false);
+    setBatchQueue([]);
+    setBatchProgress({ current: 0, total: 0 });
+  };
+
+  // ── Batch Analyze: process all queued images sequentially ──
+  const handleBatchAnalyze = async () => {
+    if (batchQueue.length === 0) return;
+
+    setIsLoading(true);
+    setError(null);
+    setBatchProgress({ current: 0, total: batchQueue.length });
+
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const API_URL = isLocal 
+      ? 'http://localhost:8000/api/v1/predict' 
+      : 'https://mhmddfebry-coral-reef-ai-backend.hf.space/api/v1/predict';
+
+    let lastResult = null;
+    let lastPreview = null;
+    let lastFile = null;
+    let errorCount = 0;
+
+    for (let i = 0; i < batchQueue.length; i++) {
+      const item = batchQueue[i];
+      setBatchProgress({ current: i + 1, total: batchQueue.length });
+      setLoadingStep(`Memproses gambar ${i + 1} dari ${batchQueue.length}: ${item.file.name}`);
+      setImagePreview(item.preview);
+
+      const formData = new FormData();
+      formData.append('file', item.file);
+      formData.append('threshold', (threshold / 100).toString());
+
+      try {
+        const response = await fetch(API_URL, { method: 'POST', body: formData });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const errMsg = errData.detail?.message || 'Gagal menganalisis gambar.';
+          // Save error to history as failed
+          setSessionHistory(prev => {
+            const newItem = {
+              id: Date.now() + i,
+              time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+              filename: item.file.name,
+              damage: null,
+              image: item.preview,
+              rawResult: null,
+              previewUrl: item.preview,
+              fileObj: item.file,
+              error: errMsg,
+            };
+            return [newItem, ...prev].slice(0, 20);
+          });
+          errorCount++;
+          continue;
+        }
+
+        const resData = await response.json();
+        if (resData.success) {
+          lastResult = resData.data;
+          lastPreview = item.preview;
+          lastFile = item.file;
+
+          setSessionHistory(prev => {
+            const newItem = {
+              id: Date.now() + i,
+              time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+              filename: item.file.name,
+              damage: resData.data.damage_percentage,
+              image: `data:image/png;base64,${resData.data.overlay_base64}`,
+              rawResult: resData.data,
+              previewUrl: item.preview,
+              fileObj: item.file,
+            };
+            return [newItem, ...prev].slice(0, 20);
+          });
+        }
+      } catch (err) {
+        errorCount++;
+        setSessionHistory(prev => {
+          const newItem = {
+            id: Date.now() + i,
+            time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            filename: item.file.name,
+            damage: null,
+            image: item.preview,
+            rawResult: null,
+            previewUrl: item.preview,
+            fileObj: item.file,
+            error: err.message || 'Error',
+          };
+          return [newItem, ...prev].slice(0, 20);
+        });
+      }
+    }
+
+    // Show last successful result on screen
+    if (lastResult) {
+      setResult(lastResult);
+      setImagePreview(lastPreview);
+      setSelectedFile(lastFile);
+    }
+
+    if (errorCount > 0 && errorCount < batchQueue.length) {
+      setError(`${errorCount} dari ${batchQueue.length} gambar gagal diproses (kemungkinan bukan foto karang). Cek riwayat untuk detail.`);
+    } else if (errorCount === batchQueue.length) {
+      setError('Seluruh gambar gagal diproses. Pastikan gambar yang diunggah adalah foto terumbu karang bawah laut.');
+    }
+
+    setIsBatchMode(false);
+    setBatchQueue([]);
+    setIsLoading(false);
+    setLoadingStep('');
+    setBatchProgress({ current: 0, total: 0 });
+
+    // Auto-open history drawer to show batch results
+    if (lastResult) {
+      setTimeout(() => setShowHistoryDrawer(true), 500);
+    }
   };
 
   const handleRestoreHistory = (item) => {
@@ -306,7 +488,7 @@ const Dashboard = ({ onBack }) => {
         )}
 
         {/* ── STEP 1: SELECT / UPLOAD FILE ── */}
-        {!selectedFile && !isLoading && !result && (
+        {!selectedFile && !isLoading && !result && !isBatchMode && (
           <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto">
             {/* Upload Zone */}
             <div
@@ -325,6 +507,7 @@ const Dashboard = ({ onBack }) => {
                 id="fileInput"
                 className="hidden"
                 accept="image/*"
+                multiple
                 onChange={handleFileChange}
               />
               <div className="w-16 h-16 rounded-full bg-gold-10 flex items-center justify-center text-[var(--color-gold)] mb-6 animate-pulse">
@@ -334,8 +517,14 @@ const Dashboard = ({ onBack }) => {
               <p className="text-gray-400 text-xs mb-6 max-w-xs">
                 Atau klik untuk menelusuri file dari komputer Anda (Format JPG, JPEG, atau PNG)
               </p>
-              <div className="text-xs text-[var(--color-gold)] border border-gold-20 px-4 py-2 rounded-full hover:bg-gold-10 transition-colors">
-                Pilih Gambar
+              <div className="flex flex-col items-center gap-2">
+                <div className="text-xs text-[var(--color-gold)] border border-gold-20 px-4 py-2 rounded-full hover:bg-gold-10 transition-colors">
+                  Pilih Gambar
+                </div>
+                <span className="text-[10px] text-gray-500 flex items-center gap-1">
+                  <Images size={12} />
+                  Mendukung multi-upload hingga {MAX_BATCH_SIZE} gambar
+                </span>
               </div>
             </div>
 
@@ -346,14 +535,65 @@ const Dashboard = ({ onBack }) => {
               </div>
               <div className="text-left">
                 <h4 className="text-[var(--color-gold)] text-xs font-semibold tracking-wider uppercase mb-1.5">
-                  Syarat & Batasan Sistem AI
+                  Validasi AI & Keamanan Sistem
                 </h4>
                 <p className="text-gray-400 text-[11px] leading-relaxed">
-                  Model Deep Learning (U-Net) ini dilatih <strong>eksklusif</strong> untuk mengenali pola kerusakan pada <strong>terumbu karang bawah laut</strong>. 
-                  Sistem tidak memiliki filter klasifikasi objek. Jika Anda mengunggah foto wajah, benda, atau lingkungan selain karang laut, 
-                  AI akan tetap merender secara paksa dan memetakan tekstur gambar tersebut seolah-olah itu adalah terumbu karang.
+                  Sistem ini dilengkapi dengan <strong>Satpam AI (OpenAI CLIP)</strong> yang secara otomatis menyaring gambar masuk. 
+                  Sistem akan <strong>menolak</strong> gambar yang bukan terumbu karang bawah laut (seperti foto batu darat, benda, wajah, dll) 
+                  untuk memastikan bahwa Model Deep Learning (U-Net) hanya menganalisis data ekologis yang valid.
                 </p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── BATCH PREVIEW: Show grid of selected batch images ── */}
+        {isBatchMode && !isLoading && !result && (
+          <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto">
+            <div className="glass-card rounded-2xl p-6 md:p-8 border border-gold-15">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-serif text-lg text-[var(--color-gold)] flex items-center gap-2">
+                  <Images size={20} />
+                  Batch Processing
+                  <span className="text-xs text-gray-400 font-sans">({batchQueue.length} gambar dipilih)</span>
+                </h3>
+                <button
+                  onClick={handleReset}
+                  className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors cursor-pointer"
+                >
+                  Batal Semua
+                </button>
+              </div>
+
+              {/* Thumbnail Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-6">
+                {batchQueue.map((item, idx) => (
+                  <div key={idx} className="relative group rounded-xl overflow-hidden border border-white/10 hover:border-gold-30 transition-colors">
+                    <img src={item.preview} alt={item.file.name} className="w-full h-24 object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <p className="absolute bottom-1 left-2 right-6 text-[9px] text-white truncate opacity-0 group-hover:opacity-100 transition-opacity">{item.file.name}</p>
+                    <button
+                      onClick={() => removeBatchItem(idx)}
+                      className="absolute top-1.5 right-1.5 w-5 h-5 bg-black/60 hover:bg-red-500 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Batch Analyze Button */}
+              <button
+                onClick={handleBatchAnalyze}
+                className="w-full cta-btn text-[var(--color-ocean-950)] font-semibold text-sm tracking-wider uppercase px-6 py-4 rounded-full flex items-center justify-center gap-3 cursor-pointer"
+              >
+                <Activity size={16} />
+                Mulai Analisis {batchQueue.length} Gambar Sekaligus
+              </button>
+
+              <p className="text-center text-[10px] text-gray-500 mt-3">
+                Estimasi waktu: ~{batchQueue.length * 12} detik (bergantung pada kecepatan server)
+              </p>
             </div>
           </div>
         )}
@@ -424,8 +664,15 @@ const Dashboard = ({ onBack }) => {
               {/* The Laser Line */}
               <div className="absolute left-0 right-0 h-1 bg-[var(--color-gold)] scan-laser z-10" />
               
-              {/* Animated scan overlay trail (optional visual effect) */}
+              {/* Animated scan overlay trail */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#c9a96e]/10 z-0 opacity-50" />
+
+              {/* Batch progress badge */}
+              {batchProgress.total > 1 && (
+                <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-[var(--color-gold)] border border-gold-20 z-20">
+                  {batchProgress.current} / {batchProgress.total}
+                </div>
+              )}
             </div>
 
             {/* Right: Loading Status */}
@@ -816,11 +1063,13 @@ const Dashboard = ({ onBack }) => {
 
 
 
+      </main>
+
         {/* ── STATS MODAL (TRAINING HISTORY) ── */}
         {showStatsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowStatsModal(false)} />
-            <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto glass-card border border-gold-20 rounded-2xl p-8 z-10 shadow-2xl">
+            <div className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto glass-card border border-gold-20 rounded-2xl p-6 md:p-10 z-10 shadow-2xl custom-scrollbar">
               <div className="flex justify-between items-start mb-8">
                 <div>
                   <h3 className="font-serif text-3xl text-gradient-gold mb-2">Training History (50 Epochs)</h3>
@@ -888,8 +1137,6 @@ const Dashboard = ({ onBack }) => {
             </div>
           </div>
         )}
-
-      </main>
 
       {/* ── PRINT ONLY REPORT ── */}
       {result && (
@@ -984,18 +1231,22 @@ const Dashboard = ({ onBack }) => {
     </div>
 
       {/* ── SESSION HISTORY DRAWER (Slide-in from right) ── */}
-      {showHistoryDrawer && sessionHistory.length > 0 && (
+      {sessionHistory.length > 0 && (
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm print:hidden drawer-backdrop"
+            className={`fixed inset-0 bg-black/60 print:hidden transition-all duration-300 ${
+              showHistoryDrawer ? 'opacity-100 backdrop-blur-sm pointer-events-auto' : 'opacity-0 pointer-events-none'
+            }`}
             style={{ zIndex: 45 }}
             onClick={() => setShowHistoryDrawer(false)}
           />
           
           {/* Drawer Panel */}
           <div 
-            className="fixed top-0 right-0 h-full w-[340px] max-w-[85vw] bg-[#0a0a0a] border-l border-gold-20 flex flex-col print:hidden drawer-slide-in"
+            className={`fixed top-0 right-0 h-full w-[340px] max-w-[85vw] bg-[#0a0a0a] border-l border-gold-20 flex flex-col print:hidden transition-transform duration-300 ease-out ${
+              showHistoryDrawer ? 'translate-x-0' : 'translate-x-full'
+            }`}
             style={{ zIndex: 46 }}
           >
             {/* Drawer Header */}

@@ -7,6 +7,9 @@ import ModelDocsPage from './components/ModelDocsPage';
 import ResearchPage from './components/ResearchPage';
 import FAQPage from './components/FAQPage';
 import ContactPage from './components/ContactPage';
+import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import TermsOfServicePage from './components/TermsOfServicePage';
+import PartnersPage from './components/PartnersPage';
 
 const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -70,6 +73,15 @@ function App() {
     if (page === 'contact') {
       return <ContactPage onBack={() => setPage('landing')} />;
     }
+    if (page === 'privacy') {
+      return <PrivacyPolicyPage onBack={() => setPage('landing')} />;
+    }
+    if (page === 'terms') {
+      return <TermsOfServicePage onBack={() => setPage('landing')} />;
+    }
+    if (page === 'partners') {
+      return <PartnersPage onBack={() => setPage('landing')} />;
+    }
 
     return (
       <LandingPage 
@@ -79,6 +91,9 @@ function App() {
         onResearch={() => setPage('research')}
         onFAQ={() => setPage('faq')}
         onContact={() => setPage('contact')}
+        onPrivacy={() => setPage('privacy')}
+        onTerms={() => setPage('terms')}
+        onPartners={() => setPage('partners')}
       />
     );
   };
