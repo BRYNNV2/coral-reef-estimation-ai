@@ -802,8 +802,8 @@ const AboutSection = () => {
 /* ═══════════════════════════════════════════════════════════
    DATASET SECTION — Spylt Reference Layout
    ═══════════════════════════════════════════════════════════ */
-const StatItem = ({ title, value }) => (
-  <div className="flex flex-col items-center justify-center text-center w-[45%] md:w-auto py-4 md:py-2">
+const StatItem = ({ title, value, className }) => (
+  <div className={`flex flex-col items-center justify-center text-center py-4 md:py-2 ${className || "w-[45%] md:w-auto"}`}>
     <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">{title}</span>
     <span className="font-serif text-3xl md:text-4xl text-[var(--color-gold)] mt-1">{value}</span>
   </div>
@@ -920,15 +920,15 @@ const DatasetSection = () => {
 
         {/* Bottom Pill Bar */}
         <div className="pill-bar w-full max-w-6xl glass-card rounded-[2.5rem] md:rounded-full flex flex-wrap md:flex-nowrap justify-between items-center px-6 py-8 md:px-16 md:py-8 shadow-2xl shadow-black/50 relative z-20 border border-gold-10">
-          <StatItem title="Total Citra" value="3,500+" />
+          <StatItem title="Total Citra" value="5,500+" />
           <div className="w-px h-16 bg-white/10 hidden md:block" />
-          <StatItem title="Resolusi Image" value="640x640" />
+          <StatItem title="Resolusi Input" value="256x256" />
           <div className="w-px h-16 bg-white/10 hidden md:block" />
-          <StatItem title="Format Anotasi" value="Poligon" />
+          <StatItem title="Format Anotasi" value="Binary Mask" />
           <div className="w-px h-16 bg-white/10 hidden md:block" />
-          <StatItem title="Tipe Kategori" value="5 Kelas" />
+          <StatItem title="Tipe Kategori" value="2 Kelas" />
           <div className="w-px h-16 bg-white/10 hidden md:block" />
-          <StatItem title="Sumber Data" value="Roboflow" />
+          <StatItem title="Sumber Data" value="Roboflow & Akuisisi Lokal" className="w-full md:w-auto" />
         </div>
 
       </div>
